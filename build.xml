@@ -1,0 +1,41 @@
+<project name="Zelda" default="build" basedir=".">
+
+	<property name="src_dir" value="${basedir}/src" />
+	<property name="class_dir" value="${basedir}/classes" />
+	<property name="doc_dir" value="${basedir}/doc/api" />
+	<property name="lib_dir" value="${basedir}/lib" />	
+
+	<target name="build" description="Build zelda project" >
+		<javac 
+			classpath="${class_dir}:${lib_dir}/golden_0_2_3.jar" 
+			srcdir="${src_dir}" 
+			destdir="${class_dir}" 
+			deprecation="yes"
+			includes="**/*.java" 
+			source="1.6" 
+			debug="on"
+			optimize="on"
+			/>
+	</target>
+	
+	<target name="rebuild" depends="clean, build" description="Rebuild zelda project" >
+	</target>	
+		
+	<target name="clean" description="Clean Super mario bros project">
+		<delete>
+			<fileset dir="${class_dir}" includes="**/*.class" />
+		</delete>
+	</target>
+		
+	<target name="jar" description="Create the jar of the zelda project">
+		<jar destfile="${lib_dir}/zelda.jar" 
+			basedir="${class_dir}" 
+			includes="**/*.class">
+			<manifest>
+				<attribute name="Built-By" value="Damien Pellier" />
+			</manifest>
+		</jar>
+	</target>
+		
+</project>
+
