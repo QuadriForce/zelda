@@ -33,7 +33,8 @@ public class Link extends AnimatedSprite {
     private Blade.Kind blade;
     
     private Shield.Kind shield;
-    
+
+
     private Orientation orientation;
     
     private int life;
@@ -110,6 +111,9 @@ public class Link extends AnimatedSprite {
         this.setAnimationFrame(0, 0);
     }
 
+    public Orientation getOrientation() {
+        return orientation;
+    }
     public void setBoard(Board board) {
         SpriteGroup link = new SpriteGroup("LINK SPRITE GROUPE");
         link.add(this);

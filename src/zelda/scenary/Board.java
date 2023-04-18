@@ -36,7 +36,7 @@ public class Board {
         display = true;
     }
 
-    public int getX() {
+    public int getX(){
         return this.x;
     }
     
