@@ -18,6 +18,7 @@ public class Zelda extends Game {
     private Quest quest;
 
     private boolean menu;
+    private int hitboxInset = 5;
 
     public Zelda() {
 
@@ -43,27 +44,29 @@ public class Zelda extends Game {
         boolean right = false;
         boolean up = false;
         boolean down = false;
-        boolean canMove = true;
         Rectangle linkRect = new Rectangle(
-                (int) this.link.getX(), (int) this.link.getY(),
-                link.getWidth(), link.getHeight()
+                (int) this.link.getX() + this.hitboxInset,
+                (int) this.link.getY() +this.hitboxInset,
+                link.getWidth() - 2 * this.hitboxInset,
+                link.getHeight() - 2 * this.hitboxInset
         );
 
         Rectangle link1Rect = new Rectangle(
-                (int) this.link1.getX(), (int) this.link1.getY(),
-                link.getWidth(), link.getHeight()
+                (int) this.link1.getX() + this.hitboxInset,
+                (int) this.link1.getY() +this.hitboxInset,
+                link.getWidth() - 2 * this.hitboxInset,
+                link.getHeight() - 2 * this.hitboxInset
         );
 
         if (linkRect.intersects(link1Rect)) {
-            canMove = false;
             if (link.getOrientation() == Orientation.WEST) {
-                this.link.setLocation(this.link1.getX() + this.link1.getWidth() + 5, this.link.getY());
+                this.link.setLocation(this.link1.getX() + this.link1.getWidth(), this.link.getY());
             } else if (link.getOrientation() == Orientation.EAST) {
-                this.link.setLocation(this.link1.getX() - this.link.getWidth() - 5, this.link.getY());
+                this.link.setLocation(this.link1.getX() - this.link.getWidth(), this.link.getY());
             } else if (link.getOrientation() == Orientation.NORTH) {
-                this.link.setLocation(this.link.getX(), this.link1.getY() + this.link1.getHeight() + 5);
+                this.link.setLocation(this.link.getX(), this.link1.getY() + this.link1.getHeight());
             } else if (link.getOrientation() == Orientation.SOUTH) {
-                this.link.setLocation(this.link.getX(), this.link1.getY() - this.link.getHeight() - 5);
+                this.link.setLocation(this.link.getX(), this.link1.getY() - this.link.getHeight());
             }
         }
 
