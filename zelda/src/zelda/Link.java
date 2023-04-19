@@ -19,16 +19,25 @@ import com.golden.gamedev.object.collision.AdvanceCollisionGroup;
 public class Link extends AnimatedSprite {
     
     private static final double SPEED = 0.2;
+    
     private static final int ANIMATION_DELAY = 100;  
+    
     private static final int FIGHT_TIMER = 300;
+    
     public static final Shield.Kind DEFAULT_SHIELD = Shield.Kind.SMALL;
+    
     public static final Orientation DEFAULT_ORIENTATION = Orientation.NORTH;
     
     private Game game;
+    
     private Blade.Kind blade;
+    
     private Shield.Kind shield;
+    
     private Orientation orientation;
+    
     private int life;
+    
     private Timer figth;
     
     private CollisionManager manager;
@@ -127,10 +136,12 @@ public class Link extends AnimatedSprite {
             this.manager.checkCollision();
     }
 
+    
     public void render(Graphics2D g) {
         super.render(g);
     }
-  
+
+    
     public void walk(Orientation direction) {
         if (!this.figth.isActive()) { 
             switch (direction) {
@@ -252,31 +263,18 @@ public class Link extends AnimatedSprite {
         }
     }
     
-    public void takeDamage(int damage) {
-    	//si collision alors damage
-    	if 
-		this.life -= damage;
-		if (this.life <= 0) {
-			// mort, implémenter la logique de suppression de l'ennemi
-			this.die();
-//            this.manager.removeFromCollision();
-//            game.increaseScore(100); // Ajouter un score de 100 points pour avoir vaincu un ennemi
-		}
-	}
-    
-    
     private class LinkCollisionManager extends AdvanceCollisionGroup {
-        
-    	public LinkCollisionManager() {
+        public LinkCollisionManager() {
             this.pixelPerfectCollision = false;
         }
         
         public void collided(Sprite s1, Sprite s2) {
             
+     
+        
             this.revertPosition1();
         }
     }
-    
      
 }
     

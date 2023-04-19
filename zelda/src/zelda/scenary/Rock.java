@@ -63,7 +63,7 @@ public class Rock extends AbstractTile {
             this.add("res/sprites/scenary/GREEN_SOUTH_WEST_ROCK_3.GIF", -1);
             this.add("res/sprites/scenary/GREEN_SOUTH_WEST_ROCK_4.GIF", -1);
             break;
-        
+        }
         case ESCALIER:
         this.add("res/sprites/scenary/GREEN_SOUTH_WEST_ROCK_1.GIF", -1);
         this.add("res/sprites/scenary/GREEN_SOUTH_WEST_ROCK_2.GIF", 1);
