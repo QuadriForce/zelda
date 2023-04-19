@@ -64,7 +64,7 @@ public class Quest extends PlayField {
                                     case "foret":
                                         switch (word){
                                             case ".":
-                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_NORTH_WEST_CORNER));
+                                                tempBoard.add(new Floor(this.game, Floor.Color.SANDu));
                                                 break;
                                             case "x":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_PLAIN));

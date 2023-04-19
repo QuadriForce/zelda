@@ -55,7 +55,6 @@ public class AbstractTile implements Tile {
                 }
             }
         }
-
     }
     
     public double getX() {
