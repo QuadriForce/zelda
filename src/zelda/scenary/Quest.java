@@ -1,23 +1,25 @@
 package zelda.scenary;
 
 import java.awt.Graphics2D;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
 import zelda.Zelda;
 
 import com.golden.gamedev.object.PlayField;
+import zelda.objects.worldObject;
 
 public class Quest extends PlayField {
     
     private Zelda game;
     private static final Path mapDir = Paths.get("res/sprites/maps");
     private Board[][] boards;
+
     
     private QuestMenu menu;
 
@@ -34,7 +36,6 @@ public class Quest extends PlayField {
     }
     private void initRessources() {
         this.menu = new QuestMenu(this.game);
-
         try (Stream<Path> paths = Files.walk(mapDir)) {
             paths.filter(Files::isRegularFile)
                     .forEachOrdered(mapPath -> {
@@ -44,18 +45,26 @@ public class Quest extends PlayField {
                         int x = Character.getNumericValue(mapName.charAt(0));
                         int y = Character.getNumericValue(mapName.charAt(1));
                         String typeMap = mapName.split("-")[1];
+
+                        Board tempBoard = new Board(this.game, x, y,null);
                         System.out.println(x + "-"+y+"-"+mapName+"-"+typeMap);
-                        Board tempBoard = new Board(this.game, x, y);
+
+
+                        if(x == 1 && y ==1){
+                            ArrayList<worldObject> objectsList = new ArrayList<>();
+                            objectsList.add(new worldObject(this.game, "keyDungeon"));
+                            objectsList.add(new worldObject(this.game, "dungeonEntry"));
+                            tempBoard.setObjects(objectsList);
+                        }
 
                         try (Scanner sc = new Scanner(mapPath);) {
                             while(sc.hasNext()) {
                                 String word = sc.next();
-
                                 switch (typeMap){
                                     case "foret":
                                         switch (word){
                                             case ".":
-                                                tempBoard.add(new Floor(this.game, Floor.Color.SAND));
+                                                tempBoard.add(new Floor(this.game, Floor.Color.SANDu));
                                                 break;
                                             case "x":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_PLAIN));
@@ -69,6 +78,9 @@ public class Quest extends PlayField {
                                             case "M":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_NORTH_EAST_CORNER));
                                                 break;
+                                            /*case "w1":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind));
+                                                break;*/
                                         }
                                 }
                             }
@@ -80,9 +92,30 @@ public class Quest extends PlayField {
         }catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public Board getCurrentBoard() {
+        return this.boards[this.x][this.y];
+    }
+    
+    public void add(Board board) {
+        //this.addGroup(board.getBackground());
+        //this.addGroup(board.getForground());
+        this.boards[board.getX()][board.getY()] = board;
+    }
+    public void update(long elapsedTime) {
+        super.update(elapsedTime);
+        this.boards[this.x][this.y].update(elapsedTime);
+        this.menu.update(elapsedTime);
+    }
+    public void render(Graphics2D g) {
+        super.render(g);
+        this.boards[this.x][this.y].render(g);
+        this.menu.render(g);
+    }
+}
 
-        /*// Board (0, 0)
+/*// Board (0, 0)
         Board b00 = new Board(this.game, 0, 0);
         // Board (0, 1)
         Board b01 = new Board(this.game, 0, 1);
@@ -118,26 +151,3 @@ public class Quest extends PlayField {
 
         this.add(b00);
         this.add(b01);*/
-    }
-    
-    
-    public Board getCurrentBoard() {
-        return this.boards[this.x][this.y];
-    }
-    
-    public void add(Board board) {
-        //this.addGroup(board.getBackground());
-        //this.addGroup(board.getForground());
-        this.boards[board.getX()][board.getY()] = board;
-    }
-    public void update(long elapsedTime) {
-        super.update(elapsedTime);
-        this.boards[this.x][this.y].update(elapsedTime);
-        this.menu.update(elapsedTime);
-    }
-    public void render(Graphics2D g) {
-        super.render(g);
-        this.boards[this.x][this.y].render(g);
-        this.menu.render(g);
-    }
-}

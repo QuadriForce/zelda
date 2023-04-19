@@ -3,9 +3,11 @@ package zelda;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import zelda.objects.Blade;
 import zelda.objects.Shield;
+import zelda.objects.worldObject;
 import zelda.scenary.Board;
 
 import com.golden.gamedev.Game;
@@ -18,9 +20,9 @@ import com.golden.gamedev.object.collision.AdvanceCollisionGroup;
 
 public class Link extends AnimatedSprite {
     
-    private static final double SPEED = 0.2;
+    private static final double SPEED = 0.5;
     
-    private static final int ANIMATION_DELAY = 100;  
+    private static final int ANIMATION_DELAY = 100;
     
     private static final int FIGHT_TIMER = 300;
     
@@ -29,6 +31,9 @@ public class Link extends AnimatedSprite {
     public static final Orientation DEFAULT_ORIENTATION = Orientation.NORTH;
     
     private Game game;
+
+
+    private ArrayList<worldObject> worldObjects;
     
     private Blade.Kind blade;
     
@@ -41,10 +46,12 @@ public class Link extends AnimatedSprite {
     
     private Timer figth;
     
-    private CollisionManager manager;
+    public CollisionManager manager;
     
     public Link(Game game) {
         this.game = game;
+        this.worldObjects = new ArrayList<>();
+        this.life = 10;
         this.shield = Link.DEFAULT_SHIELD;
         this.orientation = Link.DEFAULT_ORIENTATION;
         this.getAnimationTimer().setDelay(Link.ANIMATION_DELAY);
@@ -109,6 +116,14 @@ public class Link extends AnimatedSprite {
         this.setImages(sprites);
         this.setLocation(256, 380);
         this.setAnimationFrame(0, 0);
+    }
+
+    public ArrayList<worldObject> getWorldObjects() {
+        return worldObjects;
+    }
+
+    public void addObject(worldObject obj) {
+        this.worldObjects.add(obj);
     }
 
     public Orientation getOrientation() {
@@ -270,11 +285,10 @@ public class Link extends AnimatedSprite {
     private class LinkCollisionManager extends AdvanceCollisionGroup {
         public LinkCollisionManager() {
             this.pixelPerfectCollision = false;
+
         }
         
         public void collided(Sprite s1, Sprite s2) {
-            
-     
         
             this.revertPosition1();
         }

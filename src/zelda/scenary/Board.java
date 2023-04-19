@@ -8,6 +8,7 @@ import zelda.Zelda;
 
 import com.golden.gamedev.object.Sprite;
 import com.golden.gamedev.object.SpriteGroup;
+import zelda.objects.worldObject;
 
 public class Board {
     
@@ -22,13 +23,16 @@ public class Board {
     private AbstractTile[][] tiles;
     
     private Zelda game;
-    
+
+
+    private ArrayList<worldObject> objects;
     private int size;
     
     private boolean display;
     
-    public Board(Zelda game, int x, int y) {
+    public Board(Zelda game, int x, int y, ArrayList<worldObject> objectsList) {
         this.game = game;
+        this.objects = objectsList;
         this.x = x;
         this.y = y;
         this.tiles = new AbstractTile[WIDTH][HEIGHT];
@@ -43,7 +47,14 @@ public class Board {
     public int getY() {
         return this.y;
     }
-    
+
+    public ArrayList<worldObject> getObjects() {
+        return objects;
+    }
+
+    public void setObjects(ArrayList<worldObject > objects) {
+        this.objects = objects;
+    }
     
     public boolean moveTo(long elapsedTime, double x, double y, double speed) {
         boolean reached = false;

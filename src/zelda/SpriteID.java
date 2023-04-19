@@ -25,5 +25,7 @@ public interface SpriteID {
     public static final int DARK_ROCK_7_ID = 20;
     public static final int OUTSIDE_DOOR_ID = 21;
     public static final int SAND_FLOOR_ID = 22;
+    public static final int KEY = 23;
+    public static final int DOOR = 24;
     
 }

@@ -23,6 +23,15 @@ public class Rock extends AbstractTile {
         DESERT_TOTEM,
         FORET_TOTEM,
         NEIGE_TOTEM,
+        WATER_MID_CENTER,
+        WATER_MID_WEST,
+        WATER_MID_EAST,
+        WATER_SOUTH_EAST_CORNER,
+        WATER_SOUTH_WEST_CORNER,
+        WATER_SOUTH_CENTER_CORNER,
+        WATER_NORTH_EAST_CORNER,
+        WATER_NORTH_CENTER_CORNER,
+        WATER_NORTH_WEST_CORNER,
     }
 
     private Kind kind;
