@@ -15,42 +15,43 @@ import com.golden.gamedev.object.PlayField;
 import zelda.objects.worldObject;
 
 public class Quest extends PlayField {
-    
+
     private Zelda game;
     private static final Path mapDir = Paths.get("res/sprites/maps");
     private Board[][] boards;
 
-    
+
     private QuestMenu menu;
 
     public int x;
     public int y;
-    
+
     public Quest(Zelda game) {
         super();
         this.game = game;
         this.boards = new Board[5][5];
         this.initRessources();
-        this.x = 0;
+        this.x = 4;
         this.y = 0;
     }
+
     private void initRessources() {
         this.menu = new QuestMenu(this.game);
         try (Stream<Path> paths = Files.walk(mapDir)) {
             paths.filter(Files::isRegularFile)
                     .forEachOrdered(mapPath -> {
                         String mapName = mapPath.getFileName().toString();
-                        mapName = mapName.substring(0,mapName.lastIndexOf('.'));
+                        mapName = mapName.substring(0, mapName.lastIndexOf('.'));
 
                         int x = Character.getNumericValue(mapName.charAt(0));
                         int y = Character.getNumericValue(mapName.charAt(1));
                         String typeMap = mapName.split("-")[1];
 
-                        Board tempBoard = new Board(this.game, x, y,null);
-                        System.out.println(x + "-"+y+"-"+mapName+"-"+typeMap);
+                        Board tempBoard = new Board(this.game, x, y, null);
+                        System.out.println(x + "-" + y + "-" + mapName + "-" + typeMap);
 
 
-                        if(x == 1 && y ==1){
+                        if (x == 1 && y == 1) {
                             ArrayList<worldObject> objectsList = new ArrayList<>();
                             objectsList.add(new worldObject(this.game, "keyDungeon"));
                             objectsList.add(new worldObject(this.game, "dungeonEntry"));
@@ -58,13 +59,13 @@ public class Quest extends PlayField {
                         }
 
                         try (Scanner sc = new Scanner(mapPath);) {
-                            while(sc.hasNext()) {
+                            while (sc.hasNext()) {
                                 String word = sc.next();
-                                switch (typeMap){
+                                switch (typeMap) {
                                     case "foret":
-                                        switch (word){
+                                        switch (word) {
                                             case ".":
-                                                tempBoard.add(new Floor(this.game, Floor.Color.SANDu));
+                                                tempBoard.add(new Floor(this.game, Floor.Color.SAND));
                                                 break;
                                             case "x":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_PLAIN));
@@ -78,18 +79,69 @@ public class Quest extends PlayField {
                                             case "M":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_NORTH_EAST_CORNER));
                                                 break;
-                                            /*case "w1":
-                                                tempBoard.add(new Rock(this.game, Rock.Kind));
-                                                break;*/
+                                        }
+                                    case "rocher":
+                                        switch (word) {
+                                            case ".":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.SAND));
+                                                break;
+                                            case "r":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_ROCK));
+                                                break;
+                                            case "r1":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_NORTH_WEST_CORNER));
+                                                break;
+                                            case "r2":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_NORTH_CENTER));
+                                                break;
+                                            case "r3":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_NORTH_EAST_CORNER));
+                                                break;
+                                            case "r4":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_SOUTH_WEST_CORNER));
+                                                break;
+                                            case "r5":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_SOUTH_CENTER));
+                                                break;
+                                            case "r6":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DESERT_SOUTH_EAST_CORNER));
+                                                break;
+                                            case "w1":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_NORTH_WEST_CORNER));
+                                                break;
+                                            case "w2":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_NORTH_CENTER_CORNER));
+                                                break;
+                                            case "w3":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_NORTH_EAST_CORNER));
+                                                break;
+                                            case "w4":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_MID_WEST));
+                                                break;
+                                            case "w5":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_MID_CENTER));
+                                                break;
+                                            case "w6":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_MID_EAST));
+                                                break;
+                                            case "w7":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_SOUTH_WEST_CORNER));
+                                                break;
+                                            case "w8":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_SOUTH_CENTER_CORNER));
+                                                break;
+                                            case "w9":
+                                                tempBoard.add(new Floor(this.game, Floor.Color.WATER_SOUTH_EAST_CORNER));
+                                                break;
                                         }
                                 }
                             }
-                        }catch (IOException e) {
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                         this.add(tempBoard);
                     });
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -97,17 +149,19 @@ public class Quest extends PlayField {
     public Board getCurrentBoard() {
         return this.boards[this.x][this.y];
     }
-    
+
     public void add(Board board) {
         //this.addGroup(board.getBackground());
         //this.addGroup(board.getForground());
         this.boards[board.getX()][board.getY()] = board;
     }
+
     public void update(long elapsedTime) {
         super.update(elapsedTime);
         this.boards[this.x][this.y].update(elapsedTime);
         this.menu.update(elapsedTime);
     }
+
     public void render(Graphics2D g) {
         super.render(g);
         this.boards[this.x][this.y].render(g);

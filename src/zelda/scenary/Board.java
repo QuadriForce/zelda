@@ -83,11 +83,23 @@ public class Board {
     public void add(AbstractTile tile) {
         int x = this.size % Board.WIDTH;
         int y = this.size/Board.WIDTH;
+        if (x >= 0 && x < Board.WIDTH && y >= 0 && y < Board.HEIGHT) {
+            tile.setLocation(x * 42, y * 42 + 126);
+            tiles[x][y] = tile;
+            this.size++;
+        } else {
+            System.err.println("Invalid indices: " + x + ", " + y);
+        }
+
+   }
+    public void addBrute(AbstractTile tile) {
+        int x = this.size % Board.WIDTH;
+        int y = this.size/Board.WIDTH;
         tile.setLocation(x * 42, y * 42 + 126);
         tiles[x][y] = tile;
         this.size++;
 
-   }
+    }
     
     public SpriteGroup getForeground() {
         SpriteGroup foreground = new SpriteGroup("");
