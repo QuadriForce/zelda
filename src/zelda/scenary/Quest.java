@@ -51,10 +51,10 @@ public class Quest extends PlayField {
                         System.out.println(x + "-" + y + "-" + mapName + "-" + typeMap);
 
 
-                        if (x == 1 && y == 1) {
+                        if (x == 4 && y == 0) {
                             ArrayList<worldObject> objectsList = new ArrayList<>();
                             objectsList.add(new worldObject(this.game, "keyDungeon"));
-                            objectsList.add(new worldObject(this.game, "dungeonEntry"));
+                            //objectsList.add(new worldObject(this.game, "dungeonEntry"));
                             tempBoard.setObjects(objectsList);
                         }
 

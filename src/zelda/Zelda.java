@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Set;
 
+import zelda.enemies.Enemies;
 import zelda.objects.worldObject;
 import zelda.scenary.Quest;
 import zelda.scenary.Rock;
@@ -17,7 +18,7 @@ public class Zelda extends Game {
 
     private Link link;
     private Link link1;
-
+    private Enemies enemy1;
     private Quest quest;
     private ArrayList<worldObject> worldObjects;
     private boolean menu;
@@ -38,6 +39,9 @@ public class Zelda extends Game {
         this.link1 = new Link(this);
         this.link1.setBoard(this.quest.getCurrentBoard());
         this.link1.setLocation(250, 250); //544
+        this.enemy1 = new Enemies(this);
+        this.enemy1.setBoard(this.quest.getCurrentBoard());
+        this.enemy1.setLocation(200, 250); //544
         //this.link1.setSpeed(0, 0);
         System.out.println("width: " + this.getWidth() + " height: " + this.getHeight());
     }
@@ -152,7 +156,7 @@ public class Zelda extends Game {
         }
 
         if (this.keyPressed(KeyEvent.VK_ALT)) {
-            this.link.fight(this.link1);
+            this.link.fight(this.enemy1);
         } else if (this.keyDown(KeyEvent.VK_LEFT)) {
             this.link.walk(Orientation.WEST);
         } else if (this.keyDown(KeyEvent.VK_RIGHT)) {
@@ -167,7 +171,7 @@ public class Zelda extends Game {
             this.link.setSpeed(0, 0);
         }
 
-        this.link1.autoWalk();
+        this.enemy1.autoWalk(this.link);
         checkMapTransition();
 
         //System.out.println(this.link.getX() + " " + this.link.getY());
@@ -214,7 +218,8 @@ public class Zelda extends Game {
 
         this.quest.update(elapsedTime);
         this.link.update(elapsedTime);
-        this.link1.update(5);
+        this.link1.update2(5);
+        this.enemy1.update(elapsedTime);
     }
 
     public void render(Graphics2D g) {
@@ -224,6 +229,8 @@ public class Zelda extends Game {
         this.link.render(g);
         if (this.link1.life > 0)
             this.link1.render(g);
+        /*if (this.enemy1.getLife() > 0)
+            this.enemy1.render(g);*/
         if (this.worldObjects != null && !this.worldObjects.isEmpty()) {
             for (int i = 0; i < this.worldObjects.size(); i++) {
                 if (!this.link.getWorldObjects().contains(this.worldObjects.get(i))) {

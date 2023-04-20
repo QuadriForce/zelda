@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+
+import zelda.enemies.Enemies;
 import zelda.objects.Blade;
 import zelda.objects.Shield;
 import zelda.objects.worldObject;
@@ -24,6 +26,7 @@ public class Link extends AnimatedSprite {
 
     private static final double SPEED = 0.3;
 
+    public int enemyKilled;
     private static final int ANIMATION_DELAY = 100;
 
     private static final int FIGHT_TIMER = 300;
@@ -37,7 +40,6 @@ public class Link extends AnimatedSprite {
     private HashSet<worldObject> worldObjects;
 
     private Blade.Kind blade;
-    private int puissance;
     private SpriteGroup linkGroup;
 
     private Shield.Kind shield;
@@ -50,15 +52,20 @@ public class Link extends AnimatedSprite {
 
     public Link(Game game) {
         this.game = game;
+        this.enemyKilled =0;
         this.worldObjects = new HashSet<>();
         this.linkGroup = new SpriteGroup("LINK SPRITE GROUP");
-        this.life = 100;
+        this.life = 5;
+        this.score = 0;
         this.shield = Link.DEFAULT_SHIELD;
         this.orientation = Link.DEFAULT_ORIENTATION;
         this.getAnimationTimer().setDelay(Link.ANIMATION_DELAY);
+
         this.figth = new Timer(Link.FIGHT_TIMER);
         this.figth.setActive(false);
+
         this.manager = new LinkCollisionManager();
+
         this.initResources();
     }
 
@@ -137,7 +144,7 @@ public class Link extends AnimatedSprite {
     }
 
     public void takeDamage() {
-        this.life -= 30;
+        this.life -= 1;
         if (this.life <= 0) {
             SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Die.wav");
             soundPlayer.play();
@@ -238,8 +245,19 @@ public class Link extends AnimatedSprite {
             }
         }
     }
-
-    public void autoWalk() {
+    public void update2(long elapsedTime) {
+        super.update(elapsedTime);
+        if (this.figth.action(elapsedTime)) {
+            this.figth.setActive(false);
+            if (this.orientation.equals(Orientation.WEST)) {
+                this.setX(this.getX() + 50);
+            } else if (this.orientation.equals(Orientation.NORTH)) {
+                this.setY(this.getY() + 50);
+                this.setAnimationFrame(0, 0);
+            }
+        }
+    }
+    /*public void autoWalk() {
         if (!this.figth.isActive()) {
             int index = (int) (Math.random() * 5);
             Orientation direction = Orientation.WEST;
@@ -270,12 +288,10 @@ public class Link extends AnimatedSprite {
                     this.setHorizontalSpeed(0);
                     this.orientation = Orientation.SOUTH;
                     break;
-                case 4: // attack
-                    break;
-                default:
-                    break;
+                default://attack
+                    this.fight(t);
             }
-        }
+        }*/
 
         /*if(!this.figth.isActive()) {
         switch (direction) {
@@ -337,21 +353,21 @@ public class Link extends AnimatedSprite {
             default:
                 // do nothing
         }
-    }*/
     }
+    }*/
 
-    private boolean checkHit(Link adv) {
+    private boolean checkHit(Enemies adv) {
         if (this.getRectPos().intersects(adv.getRectPos())) {
             SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Hit.wav");
             soundPlayer.play();
             adv.takeDamage();
-            System.out.println("adverse took damage! -30 hp to :" + adv.life);
+            System.out.println("adverse took damage! -1 hp to :" + adv.getLife());
             return true;
         }
         return false;
     }
 
-    public void fight(Link adv) {
+    public void fight(Enemies adv) {
         if (!this.figth.isActive()) {
             this.setSpeed(0, 0);
             this.figth.setActive(true);
@@ -415,18 +431,6 @@ public class Link extends AnimatedSprite {
             }
         }
     }
-    
-/*    public void takeDamage(int damage) {
-        //si collision alors damage
-        if
-        this.life -= damage;
-        if (this.life <= 0) {
-            // mort, implémenter la logique de suppression de l'ennemi
-            this.die();
-//            this.manager.removeFromCollision();
-//            game.increaseScore(100); // Ajouter un score de 100 points pour avoir vaincu un ennemi
-        }
-    }*/
 
 
     private class LinkCollisionManager extends AdvanceCollisionGroup {
@@ -452,6 +456,35 @@ public class Link extends AnimatedSprite {
         return RectPos;
     }
 
-
 }
     
+/*
+* public void getAttacked(fs enemie) {
+        int damage = enemie.getPuissance(); // REVOIR
+        this.takeDamage(damage);
+    }
+
+    public void takeDamage(int damage) {
+        this.life -= damage;
+        if (this.life <= 0) {
+            // mort, GAME OVER
+            this.linkGroup.remove(this);
+        }
+    }
+
+    public void attack(Enemies enemie) {
+        int damage = (int) (Math.random()*10);
+        enemie.takeDamage(damage);
+        int eLife = enemie.getLife();
+        if (eLife>=0) { // il reste de la vie a mon enemie
+            this.increaseScore(damage); // Mon score c'est la puissance de mon coup
+        }else { // La vie de mon enemie est négative
+            this.increaseScore(damage + eLife); // Mon score c'est le peu de points de vie qui lui restaient
+        }
+    }
+
+    public void increaseScore(int score) {
+        this.score += score;
+    }
+    *
+* */
