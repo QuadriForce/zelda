@@ -15,6 +15,7 @@ import zelda.Orientation;
 import zelda.scenary.Board;
 
 public class Enemies extends AnimatedSprite{
+	
 	private static final double SPEED = 0.2;
     private static final int ANIMATION_DELAY = 100;
     private static final int FIGHT_TIMER = 300;
@@ -109,6 +110,7 @@ public class Enemies extends AnimatedSprite{
 
 	private void initResources() {
 		// Charger les images pour les animations des ennemis
+
     	BufferedImage[] sprites = new BufferedImage[5];
     
     	sprites[0] = game.getImage("/Characters/CM.gif");
@@ -208,5 +210,4 @@ public class Enemies extends AnimatedSprite{
 	    }
 	}
 }
-
 
