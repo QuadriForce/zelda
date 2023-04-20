@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import zelda.enemies.Enemies;
 import zelda.objects.Blade;
 import zelda.objects.Shield;
 import zelda.objects.worldObject;
@@ -43,7 +44,7 @@ public class Link extends AnimatedSprite {
     public Link(Game game) {
         this.game = game;
         this.worldObjects = new ArrayList<>();
-        this.life = 10;
+        this.life = 100;
         this.shield = Link.DEFAULT_SHIELD;
         this.orientation = Link.DEFAULT_ORIENTATION;
         this.getAnimationTimer().setDelay(Link.ANIMATION_DELAY);
@@ -272,18 +273,25 @@ public class Link extends AnimatedSprite {
         }
     }
     
-/*    public void takeDamage(int damage) {
-    	//si collision alors damage
-    	if 
-		this.life -= damage;
+    public void getAttacked(Enemies enemie) {
+    	
+    	int damage = enemie.getPuissance(); // REVOIR
+    	this.takeDamage(damage);
+   
+    }
+    
+    public void takeDamage(int damage) {
+    	this.life -= damage;
 		if (this.life <= 0) {
 			// mort, implémenter la logique de suppression de l'ennemi
-			this.die();
-//            this.manager.removeFromCollision();
-//            game.increaseScore(100); // Ajouter un score de 100 points pour avoir vaincu un ennemi
+			this.die(); // TODO
 		}
-	}*/
-    
+	}
+
+    public void attack(Enemies enemie) {
+    	
+    	int damage = this.get
+    }
     
     private class LinkCollisionManager extends AdvanceCollisionGroup {
         

@@ -29,7 +29,7 @@ public class Enemies extends AnimatedSprite{
     private CollisionManager manager;
 	private Weapon weapon;
     
-	// Enumération pour les types d'armes
+	/* // Enumération pour les types d'armes
 	public enum WeaponType {
 		EPEE(0, 10),    // power d'épée : 10
 	    ARC(1, 15),      // power d'arc : 15
@@ -60,7 +60,7 @@ public class Enemies extends AnimatedSprite{
 	        }
 	        throw new IllegalArgumentException("Type d'arme invalide : " + type);
 	    }
-	}
+	}*/
 	    
 
 	private class Weapon {
@@ -131,7 +131,6 @@ public class Enemies extends AnimatedSprite{
         this.manager.setCollisionGroup(Enemies, board.getForeground());
     }
 
-   
     public void update(long elapsedTime) {
         super.update(elapsedTime);
         if (this.figth.action(elapsedTime)) {
