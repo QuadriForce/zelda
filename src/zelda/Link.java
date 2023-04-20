@@ -21,19 +21,21 @@ import com.golden.gamedev.object.Timer;
 import com.golden.gamedev.object.collision.AdvanceCollisionGroup;
 
 public class Link extends AnimatedSprite {
- 
-    private static final double SPEED = 0.5;
-    
+
+    private static final double SPEED = 0.3;
+
     private static final int ANIMATION_DELAY = 100;
-    
+
     private static final int FIGHT_TIMER = 300;
     public static final Shield.Kind DEFAULT_SHIELD = Shield.Kind.SMALL;
     public static final Orientation DEFAULT_ORIENTATION = Orientation.NORTH;
-    
+
     private Game game;
 
+    public int score;
+
     private HashSet<worldObject> worldObjects;
-    
+
     private Blade.Kind blade;
     private int puissance;
     private SpriteGroup linkGroup;
@@ -43,9 +45,9 @@ public class Link extends AnimatedSprite {
     public int life;
 
     private Timer figth;
-    
+    private int hitboxInset = 5;
     public CollisionManager manager;
-    
+
     public Link(Game game) {
         this.game = game;
         this.worldObjects = new HashSet<>();
@@ -59,7 +61,7 @@ public class Link extends AnimatedSprite {
         this.manager = new LinkCollisionManager();
         this.initResources();
     }
-    
+
     private void initResources() {
         BufferedImage[] sprites = new BufferedImage[35];
         // Walk north
@@ -111,7 +113,7 @@ public class Link extends AnimatedSprite {
         sprites[32] = game.getImage("res/sprites/Link/GLFMSWBW.gif");
         sprites[33] = game.getImage("res/sprites/Link/GLFW.gif");
         sprites[34] = game.getImage("res/sprites/Link/GLFWBW.gif");
-        
+
         this.setImages(sprites);
         this.setLocation(256, 380);
         this.setAnimationFrame(0, 0);
@@ -128,18 +130,27 @@ public class Link extends AnimatedSprite {
     public Orientation getOrientation() {
         return orientation;
     }
+
     public void setBoard(Board board) {
         linkGroup.add(this);
         this.manager.setCollisionGroup(linkGroup, board.getForeground());
     }
-    public void takeDamage(){
-        this.life -=30;
-        if(this.life <= 0)
+
+    public void takeDamage() {
+        this.life -= 30;
+        if (this.life <= 0) {
+            SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Die.wav");
+            soundPlayer.play();
+            this.setLocation(0, 0); //544
             this.linkGroup.remove(this);
+
+        }
     }
+
     public SpriteGroup getLinkGroup() {
         return this.linkGroup;
     }
+
     public void update(long elapsedTime) {
         super.update(elapsedTime);
         if (this.figth.action(elapsedTime)) {
@@ -156,17 +167,118 @@ public class Link extends AnimatedSprite {
                 this.setAnimationFrame(0, 0);
             }
         }
-        if (this.manager != null) 
+        if (this.manager != null)
             this.manager.checkCollision();
     }
 
     public void render(Graphics2D g) {
         super.render(g);
     }
-  
+
     public void walk(Orientation direction) {
-        if (!this.figth.isActive()) { 
+        if (!this.figth.isActive()) {
             switch (direction) {
+                case NORTH:
+                    this.setAnimationFrame(0, 1);
+                    this.setAnimate(true);
+                    this.setVerticalSpeed(-Link.SPEED);
+                    this.setHorizontalSpeed(0);
+                    this.orientation = Orientation.NORTH;
+                    break;
+                case SOUTH:
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(2, 3);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(4, 5);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    this.setVerticalSpeed(Link.SPEED);
+                    this.setHorizontalSpeed(0);
+                    this.orientation = Orientation.SOUTH;
+                    break;
+                case EAST:
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(6, 7);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(8, 9);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    this.setHorizontalSpeed(Link.SPEED);
+                    this.setVerticalSpeed(0);
+                    this.orientation = Orientation.EAST;
+                    break;
+                case WEST:
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(10, 11);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(12, 13);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    this.setHorizontalSpeed(-Link.SPEED);
+                    this.setVerticalSpeed(0);
+                    this.orientation = Orientation.WEST;
+                    break;
+                default:
+                    // do nothing
+            }
+        }
+    }
+
+    public void autoWalk() {
+        if (!this.figth.isActive()) {
+            int index = (int) (Math.random() * 5);
+            Orientation direction = Orientation.WEST;
+            switch (index) {
+                case 0: // left
+                    direction = Orientation.WEST;
+                    this.setAnimate(true);
+                    this.setHorizontalSpeed(-Link.SPEED);
+                    this.setVerticalSpeed(0);
+                    this.orientation = Orientation.WEST;
+                    break;
+                case 1: // right
+                    this.setAnimate(true);
+                    this.setHorizontalSpeed(Link.SPEED);
+                    this.setVerticalSpeed(0);
+                    this.orientation = Orientation.EAST;
+                    break;
+                case 2: // up
+                    this.setAnimationFrame(0, 1);
+                    this.setAnimate(true);
+                    this.setVerticalSpeed(-Link.SPEED);
+                    this.setHorizontalSpeed(0);
+                    this.orientation = Orientation.NORTH;
+                    break;
+                case 3: // down
+                    this.setAnimate(true);
+                    this.setVerticalSpeed(Link.SPEED);
+                    this.setHorizontalSpeed(0);
+                    this.orientation = Orientation.SOUTH;
+                    break;
+                case 4: // attack
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /*if(!this.figth.isActive()) {
+        switch (direction) {
             case NORTH:
                 this.setAnimationFrame(0, 1);
                 this.setAnimate(true);
@@ -175,15 +287,15 @@ public class Link extends AnimatedSprite {
                 this.orientation = Orientation.NORTH;
                 break;
             case SOUTH:
-                switch(this.shield) {
-                case SMALL:
-                    this.setAnimationFrame(2, 3);
-                    break;
-                case MAGICAL:
-                    this.setAnimationFrame(4, 5);
-                    break;
-                default:
-                    // do nothing
+                switch (this.shield) {
+                    case SMALL:
+                        this.setAnimationFrame(2, 3);
+                        break;
+                    case MAGICAL:
+                        this.setAnimationFrame(4, 5);
+                        break;
+                    default:
+                        // do nothing
                 }
                 this.setAnimate(true);
                 this.setVerticalSpeed(Link.SPEED);
@@ -191,15 +303,15 @@ public class Link extends AnimatedSprite {
                 this.orientation = Orientation.SOUTH;
                 break;
             case EAST:
-                switch(this.shield) {
-                case SMALL:
-                    this.setAnimationFrame(6, 7);
-                    break;
-                case MAGICAL:
-                    this.setAnimationFrame(8, 9);
-                    break;
-                default:
-                    // do nothing
+                switch (this.shield) {
+                    case SMALL:
+                        this.setAnimationFrame(6, 7);
+                        break;
+                    case MAGICAL:
+                        this.setAnimationFrame(8, 9);
+                        break;
+                    default:
+                        // do nothing
                 }
                 this.setAnimate(true);
                 this.setHorizontalSpeed(Link.SPEED);
@@ -207,15 +319,15 @@ public class Link extends AnimatedSprite {
                 this.orientation = Orientation.EAST;
                 break;
             case WEST:
-                switch(this.shield) {
-                case SMALL:
-                    this.setAnimationFrame(10, 11);
-                    break;
-                case MAGICAL:
-                    this.setAnimationFrame(12, 13);
-                    break;
-                default:
-                    // do nothing
+                switch (this.shield) {
+                    case SMALL:
+                        this.setAnimationFrame(10, 11);
+                        break;
+                    case MAGICAL:
+                        this.setAnimationFrame(12, 13);
+                        break;
+                    default:
+                        // do nothing
                 }
                 this.setAnimate(true);
                 this.setHorizontalSpeed(-Link.SPEED);
@@ -224,111 +336,122 @@ public class Link extends AnimatedSprite {
                 break;
             default:
                 // do nothing
-            }
         }
+    }*/
     }
-    
-    public void fight(Link adverse,int hitboxInset) {
-        if (!this.figth.isActive()) { 
+
+    private boolean checkHit(Link adv) {
+        if (this.getRectPos().intersects(adv.getRectPos())) {
+            SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Hit.wav");
+            soundPlayer.play();
+            adv.takeDamage();
+            System.out.println("adverse took damage! -30 hp to :" + adv.life);
+            return true;
+        }
+        return false;
+    }
+
+    public void fight(Link adv) {
+        if (!this.figth.isActive()) {
             this.setSpeed(0, 0);
             this.figth.setActive(true);
             switch (this.orientation) {
-            case NORTH:
-                //System.out.println("avant: "+ this.getY());
-                this.setY(this.getY() - 22);
-                Rectangle linkRect = new Rectangle(
-                        (int) this.getX() + hitboxInset,
-                        (int) this.getY() + hitboxInset,
-                        this.getWidth() - 2 * hitboxInset,
-                        this.getHeight() - 2 * hitboxInset
-                );
-                Rectangle adverseRect = new Rectangle(
-                        (int) adverse.getX() + hitboxInset,
-                        (int) adverse.getY() + hitboxInset,
-                        adverse.getWidth() - 2 * hitboxInset,
-                        adverse.getHeight() - 2 * hitboxInset
-                );
-                if (linkRect.intersects(adverseRect)){
-                    adverse.takeDamage();
-                    System.out.println("adverse took damage! -30 hp to :" + adverse.life);
-
-                }
-                //System.out.println("après: "+this.getY());
-                this.setAnimationFrame(14, 16);
-                this.setAnimate(true);
-                break;
-            case SOUTH:
-                switch(this.shield) {
-                case SMALL:
-                    this.setAnimationFrame(17, 19);
+                case NORTH:
+                    //System.out.println("avant: "+ this.getY());
+                    this.setY(this.getY() - 20);
+                    //System.out.println("après: "+this.getY());
+                    checkHit(adv);
+                    this.setAnimationFrame(14, 16);
+                    this.setAnimate(true);
                     break;
-                case MAGICAL:
-                    this.setAnimationFrame(20, 22);
+                case SOUTH:
+                    this.setY(this.getY() + 20);
+                    checkHit(adv);
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(17, 19);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(20, 22);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
                     break;
-                default:
-                    // do nothing
-                }
-                this.setAnimate(true);
-                break;
-            case EAST:
-                switch(this.shield) {
-                case SMALL:
-                    this.setAnimationFrame(23, 25);
+                case EAST:
+                    this.setX(this.getX() + 10);
+                    checkHit(adv);
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(23, 25);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(26, 28);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
                     break;
-                case MAGICAL:
-                    this.setAnimationFrame(26, 28);
-                    break;
-                default:
-                    // do nothing
-                }
-                this.setAnimate(true);
-                break;
-            case WEST:
-                this.setX(this.getX() - 22);
-                switch(this.shield) {
-                case SMALL:
-                    this.setAnimationFrame(29, 31);
-                    break;
-                case MAGICAL:
-                    this.setAnimationFrame(32, 34);
+                case WEST:
+                    this.setX(this.getX() - 10);
+                    checkHit(adv);
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(29, 31);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(32, 34);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    this.orientation = Orientation.WEST;
                     break;
                 default:
                     // do nothing
-                }
-                this.setAnimate(true);
-                this.orientation = Orientation.WEST;
-                break;
-            default:
-                // do nothing
             }
         }
     }
     
 /*    public void takeDamage(int damage) {
-    	//si collision alors damage
-    	if 
-		this.life -= damage;
-		if (this.life <= 0) {
-			// mort, implémenter la logique de suppression de l'ennemi
-			this.die();
+        //si collision alors damage
+        if
+        this.life -= damage;
+        if (this.life <= 0) {
+            // mort, implémenter la logique de suppression de l'ennemi
+            this.die();
 //            this.manager.removeFromCollision();
 //            game.increaseScore(100); // Ajouter un score de 100 points pour avoir vaincu un ennemi
-		}
-	}*/
-    
-    
+        }
+    }*/
+
+
     private class LinkCollisionManager extends AdvanceCollisionGroup {
-        
-    	public LinkCollisionManager() {
+
+        public LinkCollisionManager() {
             this.pixelPerfectCollision = false;
 
         }
-        
+
         public void collided(Sprite s1, Sprite s2) {
             this.revertPosition1();
         }
+
     }
-    
-     
+
+    public Rectangle getRectPos() {
+        Rectangle RectPos = new Rectangle(
+                (int) this.getX() + this.hitboxInset,
+                (int) this.getY() + this.hitboxInset,
+                this.getWidth() - 2 * this.hitboxInset,
+                this.getHeight() - 2 * this.hitboxInset
+        );
+        return RectPos;
+    }
+
+
 }
     

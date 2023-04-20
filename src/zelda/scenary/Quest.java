@@ -79,6 +79,8 @@ public class Quest extends PlayField {
                                             case "M":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_NORTH_EAST_CORNER));
                                                 break;
+                                            default:
+                                                break;
                                         }
                                     case "rocher":
                                         switch (word) {
@@ -133,7 +135,11 @@ public class Quest extends PlayField {
                                             case "w9":
                                                 tempBoard.add(new Floor(this.game, Floor.Color.WATER_SOUTH_EAST_CORNER));
                                                 break;
+                                            default:
+                                                break;
                                         }
+                                    default:
+                                        break;
                                 }
                             }
                         } catch (IOException e) {
@@ -145,11 +151,9 @@ public class Quest extends PlayField {
             e.printStackTrace();
         }
     }
-
     public Board getCurrentBoard() {
         return this.boards[this.x][this.y];
     }
-
     public void add(Board board) {
         //this.addGroup(board.getBackground());
         //this.addGroup(board.getForground());

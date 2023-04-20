@@ -37,8 +37,8 @@ public class Zelda extends Game {
         this.menu = false;
         this.link1 = new Link(this);
         this.link1.setBoard(this.quest.getCurrentBoard());
-        this.link1.setLocation(200, 200); //544
-        this.link1.setSpeed(0, 0);
+        this.link1.setLocation(250, 250); //544
+        //this.link1.setSpeed(0, 0);
         System.out.println("width: " + this.getWidth() + " height: " + this.getHeight());
     }
 
@@ -58,17 +58,59 @@ public class Zelda extends Game {
         }
     }
 
+    public void checkMapTransition() {
+        Orientation orientation = this.link.getOrientation();
+        double x = this.link.getX();
+        double y = this.link.getY();
+
+        boolean moveLeft = false;
+        boolean moveRight = false;
+        boolean moveUp = false;
+        boolean moveDown = false;
+
+        switch (orientation) {
+            case WEST:
+                moveLeft = x < -10;
+                break;
+            case EAST:
+                moveRight = x > getHeight() + 50;
+                break;
+            case SOUTH:
+                moveDown = y > 543;
+                break;
+            case NORTH:
+                moveUp = y < 115;
+                break;
+        }
+
+        if (moveLeft) {
+            this.quest.y -= 1;
+            this.link.setLocation(getWidth() - 30, y);
+            this.link.setAnimationFrame(0, 0);
+        }
+        if (moveRight) {
+            this.quest.y += 1;
+            this.link.setLocation(0, y);
+            this.link.setAnimationFrame(0, 0);
+        }
+        if (moveUp) {
+            this.quest.x -= 1;
+            this.link.setLocation(x, getHeight() - 30);
+            this.link.setAnimationFrame(0, 0);
+        }
+        if (moveDown) {
+            this.quest.x += 1;
+            this.link.setLocation(x, 115);
+            this.link.setAnimationFrame(0, 0);
+        }
+    }
+
     public void update(long elapsedTime) {
         boolean left = false;
         boolean right = false;
         boolean up = false;
         boolean down = false;
-        Rectangle linkRect = new Rectangle(
-                (int) this.link.getX() + this.hitboxInset,
-                (int) this.link.getY() + this.hitboxInset,
-                link.getWidth() - 2 * this.hitboxInset,
-                link.getHeight() - 2 * this.hitboxInset
-        );
+
 
         if (this.quest.getCurrentBoard().getObjects() != null) {
             this.worldObjects = this.quest.getCurrentBoard().getObjects();
@@ -82,12 +124,11 @@ public class Zelda extends Game {
                         this.worldObjects.get(i).getWidth() - 2 * this.hitboxInset,
                         this.worldObjects.get(i).getHeight() - 2 * this.hitboxInset
                 );
-                if (linkRect.intersects(objectRect[i])) {
+                if (this.link.getRectPos().intersects(objectRect[i])) {
 
                     if (this.worldObjects.get(i).getName() == "keyDungeon") {
                         this.link.addObject(this.worldObjects.get(i));
-                        //System.out.println(this.quest.clearPlayField());
-                        this.quest.clearPlayField();
+                        System.out.println(this.quest.getGroups());
                     } else if (this.worldObjects.get(i).getName() == "door") {
                         //this.link.setLocation(this.worldObjects.get(i).getX(), this.worldObjects.get(i).getY() + this.worldObjects.get(i).getHeight());
                         this.link.addObject(this.worldObjects.get(i));
@@ -98,14 +139,7 @@ public class Zelda extends Game {
             worldObjects = null;
 
 
-            Rectangle link1Rect = new Rectangle(
-                    (int) this.link1.getX() + this.hitboxInset,
-                    (int) this.link1.getY() + this.hitboxInset,
-                    link.getWidth() - 2 * this.hitboxInset,
-                    link.getHeight() - 2 * this.hitboxInset
-            );
-
-        if (linkRect.intersects(link1Rect)) {
+        if (this.link.getRectPos().intersects(this.link1.getRectPos())) {
             if (link.getOrientation() == Orientation.WEST) {
                 this.link.setLocation(this.link1.getX() + this.link1.getWidth(), this.link.getY());
             } else if (link.getOrientation() == Orientation.EAST) {
@@ -118,7 +152,7 @@ public class Zelda extends Game {
         }
 
         if (this.keyPressed(KeyEvent.VK_ALT)) {
-            this.link.fight(this.link1, this.hitboxInset);
+            this.link.fight(this.link1);
         } else if (this.keyDown(KeyEvent.VK_LEFT)) {
             this.link.walk(Orientation.WEST);
         } else if (this.keyDown(KeyEvent.VK_RIGHT)) {
@@ -133,9 +167,12 @@ public class Zelda extends Game {
             this.link.setSpeed(0, 0);
         }
 
+        this.link1.autoWalk();
+        checkMapTransition();
+
         //System.out.println(this.link.getX() + " " + this.link.getY());
         //System.out.println("width: " + this.getWidth() + " height: " + this.getHeight());
-        if (link.getOrientation() == Orientation.WEST) {
+        /*if (link.getOrientation() == Orientation.WEST) {
             if (link.getX() < -10) {
                 left = true;
             }
@@ -161,26 +198,23 @@ public class Zelda extends Game {
         if (left) {
             this.quest.y -= 1;
             this.link.setLocation(this.getWidth() - 30, this.link.getY());
-            this.link.setAnimationFrame(0, 0);
         }
         if (right) {
             this.quest.y += 1;
             this.link.setLocation(0, this.link.getY());
-            this.link.setAnimationFrame(0, 0);
         }
         if (up) {
             this.quest.x -= 1;
             this.link.setLocation(this.link.getX(), this.getHeight() - 30); //544
-            this.link.setAnimationFrame(0, 0);
         }
         if (down) {
             this.quest.x += 1;
             this.link.setLocation(this.link.getX(), 115); //115 ==> hauteur du fond noir
-            this.link.setAnimationFrame(0, 0);
-        }
+        }*/
 
         this.quest.update(elapsedTime);
         this.link.update(elapsedTime);
+        this.link1.update(5);
     }
 
     public void render(Graphics2D g) {
@@ -188,7 +222,7 @@ public class Zelda extends Game {
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
         this.quest.render(g);
         this.link.render(g);
-        if(this.link1.life > 0)
+        if (this.link1.life > 0)
             this.link1.render(g);
         if (this.worldObjects != null && !this.worldObjects.isEmpty()) {
             for (int i = 0; i < this.worldObjects.size(); i++) {
