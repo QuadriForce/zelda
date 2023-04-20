@@ -36,7 +36,6 @@ public class Link extends AnimatedSprite {
     private HashSet<worldObject> worldObjects; // COMMENT ?
     
     private Blade.Kind blade;
-    private int puissance;
     private SpriteGroup linkGroup;
 
     private Shield.Kind shield;

@@ -187,8 +187,8 @@ public class Enemies extends AnimatedSprite{
     public void removeFromCollision() {
 		// TODO Auto-generated method stub
 	}
-//methode attack : quand est-ce que l'ennemie attaque ?
-    
+
+    //methode attack : quand est-ce que l'ennemie attaque ?
     
 	// Dessiner à l'écran le sprite de l'ennemi et les objets associés
     public void render(Graphics2D g) {
