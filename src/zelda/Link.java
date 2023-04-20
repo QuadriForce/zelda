@@ -148,7 +148,6 @@ public class Link extends AnimatedSprite {
             soundPlayer.play();
             this.setLocation(0, 0); //544
             this.linkGroup.remove(this);
-
         }
     }
 

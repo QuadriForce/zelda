@@ -26,61 +26,9 @@ public class Enemies extends AnimatedSprite{
     private Orientation orientation;
     private int life;
     private Timer figth;
-    private CollisionManager manager;
-	private Weapon weapon;
-    
-	/* // Enumération pour les types d'armes
-	public enum WeaponType {
-		EPEE(0, 10),    // power d'épée : 10
-	    ARC(1, 15),      // power d'arc : 15
-	    HACHE(2, 20),   // power de hache : 20
-	    LANCE(3, 30);    // power de lance : 30
-
-	    private int type;
-	    private int power;
-
-	    private WeaponType(int type, int power) {
-	        this.type = type;
-	        this.power = power;
-	    }
-
-	    public int getType() {
-	        return type;
-	    }
+    private CollisionManager manager;    
 	    
-	    public int getPuissance() {
-	        return power;
-	    }
-
-	    public static WeaponType fromType(int type) {
-	        for (WeaponType WeaponType : WeaponType.values()) {
-	            if (WeaponType.getType() == type) {
-	                return WeaponType;
-	            }
-	        }
-	        throw new IllegalArgumentException("Type d'arme invalide : " + type);
-	    }
-	}*/
-	    
-
-	private class Weapon {
-	    private WeaponType weaponType;
-	
-	    public Weapon(WeaponType weaponType) {
-	        this.weaponType = weaponType;
-	    }
-	
-	    public WeaponType getWeaponType() {
-	        return weaponType;
-	    }
-	
-	    public void setWeaponType(WeaponType weaponType) {
-	        this.weaponType = weaponType;
-	    }
-	}
-	
-	
-    public Enemies(Game game, int life, WeaponType weaponType) {
+    public Enemies(Game game, int life) {
         this.game = game;
         this.orientation = Enemies.DEFAULT_ORIENTATION;
         this.getAnimationTimer().setDelay(Enemies.getAnimationDelay());
@@ -88,7 +36,6 @@ public class Enemies extends AnimatedSprite{
         this.figth.setActive(false);
         this.manager = new EnemiesCollisionManager();
         this.initResources();
-        this.weapon = new Weapon(weaponType);
         this.life = life;
     }
 
@@ -137,23 +84,8 @@ public class Enemies extends AnimatedSprite{
             this.figth.setActive(false);
             if (this.orientation.equals(Orientation.WEST)) {
                 this.setX(this.getX() + 22);
-                if (this.weapon.getWeaponType().equals(WeaponType.EPEE)) {
-                    this.setAnimationFrame(10, 10);
-                } else if (this.weapon.getWeaponType().equals(WeaponType.ARC)) {
-                    this.setAnimationFrame(15, 15);
-                }else if (this.weapon.getWeaponType().equals(WeaponType.HACHE)) {
-                	this.setAnimationFrame(20, 20); // cas du WEAPON3
-                }
             } else if (this.orientation.equals(Orientation.NORTH)) {
-                this.setY(this.getY() + 22);
-                if (this.weapon.getWeaponType().equals(WeaponType.EPEE)) {
-                    this.setAnimationFrame(30, 30); // Logique spécifique pour WeaponType.WEAPON3
-                } else if (this.weapon.getWeaponType().equals(WeaponType.ARC)){
-                    this.setAnimationFrame(35, 35);
-                } else if (this.weapon.getWeaponType().equals(WeaponType.LANCE)) {
-                	this.setAnimationFrame(40, 40);
-                }
-                
+                this.setY(this.getY() + 22);              
             }
         }
         if (this.manager != null) 
@@ -164,10 +96,6 @@ public class Enemies extends AnimatedSprite{
         if (!this.figth.isActive()) {
             this.figth.setActive(true);
         }
-    }
-
-    public void changeWeapon(WeaponType weaponType) {
-        this.weapon.setWeaponType(weaponType);
     }
 
     public void takeDamage(int damage) {
