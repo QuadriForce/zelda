@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+//import zelda.enemies.Enemies;
 import zelda.objects.Blade;
 import zelda.objects.Shield;
 import zelda.objects.worldObject;
@@ -37,7 +38,6 @@ public class Link extends AnimatedSprite {
     private HashSet<worldObject> worldObjects;
 
     private Blade.Kind blade;
-    private int puissance;
     private SpriteGroup linkGroup;
 
     private Shield.Kind shield;
@@ -50,15 +50,20 @@ public class Link extends AnimatedSprite {
 
     public Link(Game game) {
         this.game = game;
+
         this.worldObjects = new HashSet<>();
         this.linkGroup = new SpriteGroup("LINK SPRITE GROUP");
         this.life = 100;
+        this.score = 0;
         this.shield = Link.DEFAULT_SHIELD;
         this.orientation = Link.DEFAULT_ORIENTATION;
         this.getAnimationTimer().setDelay(Link.ANIMATION_DELAY);
+
         this.figth = new Timer(Link.FIGHT_TIMER);
         this.figth.setActive(false);
+
         this.manager = new LinkCollisionManager();
+
         this.initResources();
     }
 
@@ -415,18 +420,6 @@ public class Link extends AnimatedSprite {
             }
         }
     }
-    
-/*    public void takeDamage(int damage) {
-        //si collision alors damage
-        if
-        this.life -= damage;
-        if (this.life <= 0) {
-            // mort, implémenter la logique de suppression de l'ennemi
-            this.die();
-//            this.manager.removeFromCollision();
-//            game.increaseScore(100); // Ajouter un score de 100 points pour avoir vaincu un ennemi
-        }
-    }*/
 
 
     private class LinkCollisionManager extends AdvanceCollisionGroup {
@@ -452,6 +445,35 @@ public class Link extends AnimatedSprite {
         return RectPos;
     }
 
-
 }
     
+/*
+* public void getAttacked(Enemies enemie) {
+        int damage = enemie.getPuissance(); // REVOIR
+        this.takeDamage(damage);
+    }
+
+    public void takeDamage(int damage) {
+        this.life -= damage;
+        if (this.life <= 0) {
+            // mort, GAME OVER
+            this.linkGroup.remove(this);
+        }
+    }
+
+    public void attack(Enemies enemie) {
+        int damage = (int) (Math.random()*10);
+        enemie.takeDamage(damage);
+        int eLife = enemie.getLife();
+        if (eLife>=0) { // il reste de la vie a mon enemie
+            this.increaseScore(damage); // Mon score c'est la puissance de mon coup
+        }else { // La vie de mon enemie est négative
+            this.increaseScore(damage + eLife); // Mon score c'est le peu de points de vie qui lui restaient
+        }
+    }
+
+    public void increaseScore(int score) {
+        this.score += score;
+    }
+    *
+* */

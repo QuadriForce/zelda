@@ -20,7 +20,7 @@ public class Enemies extends AnimatedSprite{
     private static final int ANIMATION_DELAY = 100;
     private static final int FIGHT_TIMER = 300;
 	public static final Orientation DEFAULT_ORIENTATION = null;
-	public static final WeaponType DEFAULT_WEAPON = WeaponType.EPEE; // Arme par défaut
+//	public static final WeaponType DEFAULT_WEAPON = WeaponType.EPEE; // Arme par défaut
 
     private Game game;
     private Orientation orientation;
@@ -29,7 +29,7 @@ public class Enemies extends AnimatedSprite{
     private CollisionManager manager;
 	private Weapon weapon;
     
-	// Enumération pour les types d'armes
+	/* // Enumération pour les types d'armes
 	public enum WeaponType {
 		EPEE(0, 10),    // power d'épée : 10
 	    ARC(1, 15),      // power d'arc : 15
@@ -60,7 +60,7 @@ public class Enemies extends AnimatedSprite{
 	        }
 	        throw new IllegalArgumentException("Type d'arme invalide : " + type);
 	    }
-	}
+	}*/
 	    
 
 	private class Weapon {
@@ -131,7 +131,6 @@ public class Enemies extends AnimatedSprite{
         this.manager.setCollisionGroup(Enemies, board.getForeground());
     }
 
-   
     public void update(long elapsedTime) {
         super.update(elapsedTime);
         if (this.figth.action(elapsedTime)) {
@@ -189,9 +188,7 @@ public class Enemies extends AnimatedSprite{
 		// TODO Auto-generated method stub
 	}
 
-    public void increaseScore(int score) {
-		// TODO Auto-generated method stub
-	}
+    //methode attack : quand est-ce que l'ennemie attaque ?
     
 	// Dessiner à l'écran le sprite de l'ennemi et les objets associés
     public void render(Graphics2D g) {
