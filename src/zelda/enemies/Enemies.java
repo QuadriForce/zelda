@@ -20,7 +20,7 @@ public class Enemies extends AnimatedSprite{
     private static final int ANIMATION_DELAY = 100;
     private static final int FIGHT_TIMER = 300;
 	public static final Orientation DEFAULT_ORIENTATION = null;
-	public static final WeaponType DEFAULT_WEAPON = WeaponType.EPEE; // Arme par défaut
+//	public static final WeaponType DEFAULT_WEAPON = WeaponType.EPEE; // Arme par défaut
 
     private Game game;
     private Orientation orientation;
@@ -187,10 +187,8 @@ public class Enemies extends AnimatedSprite{
     public void removeFromCollision() {
 		// TODO Auto-generated method stub
 	}
-
-    public void increaseScore(int score) {
-		// TODO Auto-generated method stub
-	}
+//methode attack : quand est-ce que l'ennemie attaque ?
+    
     
 	// Dessiner à l'écran le sprite de l'ennemi et les objets associés
     public void render(Graphics2D g) {
