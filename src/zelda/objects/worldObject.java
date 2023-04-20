@@ -43,7 +43,8 @@ public class worldObject extends AnimatedSprite{
 
         BufferedImage[] sprites = new BufferedImage[1];
         if (dungeonKeys.contains(name)) {
-            sprites[0] = game.getImage("res/sprites/Objects/key.gif");
+            //sprites[0] = game.getImage("res/sprites/Objects/key.gif");
+            sprites[0] = game.getImage("res/sprites/Dongeon/1/BSBlueLeever.gif");
         }
         else if (DoorsStair.contains(name))
             sprites[0] = game.getImage("res/sprites/Dongeon/1/stair.gif");

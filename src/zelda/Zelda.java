@@ -3,6 +3,7 @@ package zelda;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Set;
 
 import zelda.objects.worldObject;
 import zelda.scenary.Quest;
@@ -42,7 +43,7 @@ public class Zelda extends Game {
     }
 
     public void initObjectsResources() {
-        System.out.println(this.link.getWorldObjects());
+        //System.out.println(this.link.getWorldObjects());
         for (int i = 0; i < this.worldObjects.size(); i++) {
             if (!this.link.getWorldObjects().contains(this.worldObjects.get(i))) {
                 String objectName = this.worldObjects.get(i).getName();
@@ -85,6 +86,8 @@ public class Zelda extends Game {
 
                     if (this.worldObjects.get(i).getName() == "keyDungeon") {
                         this.link.addObject(this.worldObjects.get(i));
+                        //System.out.println(this.quest.clearPlayField());
+                        this.quest.clearPlayField();
                     } else if (this.worldObjects.get(i).getName() == "door") {
                         //this.link.setLocation(this.worldObjects.get(i).getX(), this.worldObjects.get(i).getY() + this.worldObjects.get(i).getHeight());
                         this.link.addObject(this.worldObjects.get(i));
@@ -95,12 +98,12 @@ public class Zelda extends Game {
             worldObjects = null;
 
 
-        Rectangle link1Rect = new Rectangle(
-                (int) this.link1.getX() + this.hitboxInset,
-                (int) this.link1.getY() + this.hitboxInset,
-                link.getWidth() - 2 * this.hitboxInset,
-                link.getHeight() - 2 * this.hitboxInset
-        );
+            Rectangle link1Rect = new Rectangle(
+                    (int) this.link1.getX() + this.hitboxInset,
+                    (int) this.link1.getY() + this.hitboxInset,
+                    link.getWidth() - 2 * this.hitboxInset,
+                    link.getHeight() - 2 * this.hitboxInset
+            );
 
         if (linkRect.intersects(link1Rect)) {
             if (link.getOrientation() == Orientation.WEST) {
@@ -115,7 +118,7 @@ public class Zelda extends Game {
         }
 
         if (this.keyPressed(KeyEvent.VK_ALT)) {
-            this.link.fight();
+            this.link.fight(this.link1, this.hitboxInset);
         } else if (this.keyDown(KeyEvent.VK_LEFT)) {
             this.link.walk(Orientation.WEST);
         } else if (this.keyDown(KeyEvent.VK_RIGHT)) {
@@ -178,7 +181,6 @@ public class Zelda extends Game {
 
         this.quest.update(elapsedTime);
         this.link.update(elapsedTime);
-        //this.link1.update(elapsedTime);
     }
 
     public void render(Graphics2D g) {
@@ -186,7 +188,8 @@ public class Zelda extends Game {
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
         this.quest.render(g);
         this.link.render(g);
-        this.link1.render(g);
+        if(this.link1.life > 0)
+            this.link1.render(g);
         if (this.worldObjects != null && !this.worldObjects.isEmpty()) {
             for (int i = 0; i < this.worldObjects.size(); i++) {
                 if (!this.link.getWorldObjects().contains(this.worldObjects.get(i))) {

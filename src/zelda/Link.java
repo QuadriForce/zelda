@@ -1,9 +1,11 @@
 
 package zelda;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import zelda.enemies.Enemies;
 import zelda.objects.Blade;
@@ -31,19 +33,24 @@ public class Link extends AnimatedSprite {
     
     private Game game;
 
-    private ArrayList<worldObject> worldObjects;
+    private HashSet<worldObject> worldObjects;
     
     private Blade.Kind blade;
+    private int puissance;
+    private SpriteGroup linkGroup;
+
     private Shield.Kind shield;
     private Orientation orientation;
-    private int life;
+    public int life;
+
     private Timer figth;
     
     public CollisionManager manager;
     
     public Link(Game game) {
         this.game = game;
-        this.worldObjects = new ArrayList<>();
+        this.worldObjects = new HashSet<>();
+        this.linkGroup = new SpriteGroup("LINK SPRITE GROUP");
         this.life = 100;
         this.shield = Link.DEFAULT_SHIELD;
         this.orientation = Link.DEFAULT_ORIENTATION;
@@ -111,8 +118,8 @@ public class Link extends AnimatedSprite {
         this.setAnimationFrame(0, 0);
     }
 
-    public ArrayList<worldObject> getWorldObjects() {
-        return worldObjects;
+    public HashSet<worldObject> getWorldObjects() {
+        return this.worldObjects;
     }
 
     public void addObject(worldObject obj) {
@@ -123,11 +130,17 @@ public class Link extends AnimatedSprite {
         return orientation;
     }
     public void setBoard(Board board) {
-        SpriteGroup link = new SpriteGroup("LINK SPRITE GROUPE");
-        link.add(this);
-        this.manager.setCollisionGroup(link, board.getForeground());
+        linkGroup.add(this);
+        this.manager.setCollisionGroup(linkGroup, board.getForeground());
     }
-    
+    public void takeDamage(){
+        this.life -=30;
+        if(this.life <= 0)
+            this.linkGroup.remove(this);
+    }
+    public SpriteGroup getLinkGroup() {
+        return this.linkGroup;
+    }
     public void update(long elapsedTime) {
         super.update(elapsedTime);
         if (this.figth.action(elapsedTime)) {
@@ -216,13 +229,32 @@ public class Link extends AnimatedSprite {
         }
     }
     
-    public void fight() {
+    public void fight(Link adverse,int hitboxInset) {
         if (!this.figth.isActive()) { 
             this.setSpeed(0, 0);
             this.figth.setActive(true);
             switch (this.orientation) {
             case NORTH:
+                //System.out.println("avant: "+ this.getY());
                 this.setY(this.getY() - 22);
+                Rectangle linkRect = new Rectangle(
+                        (int) this.getX() + hitboxInset,
+                        (int) this.getY() + hitboxInset,
+                        this.getWidth() - 2 * hitboxInset,
+                        this.getHeight() - 2 * hitboxInset
+                );
+                Rectangle adverseRect = new Rectangle(
+                        (int) adverse.getX() + hitboxInset,
+                        (int) adverse.getY() + hitboxInset,
+                        adverse.getWidth() - 2 * hitboxInset,
+                        adverse.getHeight() - 2 * hitboxInset
+                );
+                if (linkRect.intersects(adverseRect)){
+                    adverse.takeDamage();
+                    System.out.println("adverse took damage! -30 hp to :" + adverse.life);
+
+                }
+                //System.out.println("après: "+this.getY());
                 this.setAnimationFrame(14, 16);
                 this.setAnimate(true);
                 break;
