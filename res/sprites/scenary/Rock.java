@@ -28,12 +28,12 @@ public class Rock extends AbstractTile {
         DESERT_TOTEM,
         FORET_TOTEM,
         NEIGE_TOTEM,
-        ENTREE_DONJON1,
-        ENTREE_DONJON2,
-        ENTREE_DONJON3,
-        ENTREE_DONJON4,
-        ENTREE_DONJON5,
-        ENTREE_DONJON6,
+        ENTREE_DONJON1;
+        ENTREE_DONJON2;
+        ENTREE_DONJON3;
+        ENTREE_DONJON4;
+        ENTREE_DONJON5;
+        ENTREE_DONJON6;
         DONJON_BLOCK1,
         DONJON_BLOCK2,
         DONJON_DOOR_SOUTH,
@@ -44,7 +44,7 @@ public class Rock extends AbstractTile {
         DONJON_CLOSED_DOOR_EAST,
         DONJON_CLOSED_DOOR_WEST,
         DONJON_CLOSED_DOOR_SOUTH,
-        DONJON_WATER,
+        DONJON_WATER;
     }
 
     private Kind kind;
@@ -95,6 +95,8 @@ public class Rock extends AbstractTile {
                 this.add("res/sprites/scenary/GREEN_SOUTH_WEST_ROCK_3.GIF", -1);
                 this.add("res/sprites/scenary/GREEN_SOUTH_WEST_ROCK_4.GIF", -1);
                 break;
+            case GREEN_BOSQUET:
+                this.add("res/sprites/scenary/buisson.gif", 1);
             case ESCALIER:
                 this.add("res/sprites/scenary/ESCALIERDESERT.gif", 1);
                 this.add("res/sprites/scenary/ESCALIERFORET.gif", 1);
@@ -138,9 +140,6 @@ public class Rock extends AbstractTile {
                 break;
             case ENTREE_DONJON6:
                 this.add(new Sprite(this.game.getImage("res/sprites/scenary/Entree_Donjon/d6.gif")), 1);
-                break;
-            case GREEN_BOSQUET:
-                this.add("res/sprites/scenary/buisson.gif", 1);
                 break;
             case DONJON_BLOCK1:
                 this.add(new Sprite(this.game.getImage("res/sprites/Dongeon/1/b1.gif")), 1);

@@ -31,7 +31,7 @@ public class Quest extends PlayField {
         this.game = game;
         this.boards = new Board[5][5];
         this.initRessources();
-        this.x = 3;
+        this.x = 4;
         this.y = 1;
     }
 
@@ -51,10 +51,10 @@ public class Quest extends PlayField {
                         System.out.println(x + "-" + y + "-" + mapName + "-" + typeMap);
 
 
-                        if (x == 3 && y == 1) {
+                        if (x == 1 && y == 1) {
                             ArrayList<worldObject> objectsList = new ArrayList<>();
-                            objectsList.add(new worldObject(this.game, "crystal"));
-                            //objectsList.add(new worldObject(this.game, "dungeonEntry"));
+                            objectsList.add(new worldObject(this.game, "keyDungeon"));
+                            objectsList.add(new worldObject(this.game, "dungeonEntry"));
                             tempBoard.setObjects(objectsList);
                         }
 
@@ -79,10 +79,12 @@ public class Quest extends PlayField {
                                             case "M":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_NORTH_EAST_CORNER));
                                                 break;
+                                            case "b":
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.GREEN_BOSQUET));
+                                                break;
                                             default:
                                                 break;
                                         }
-                                        break;
                                     case "rocher":
                                         switch (word) {
                                             case ".":
@@ -139,29 +141,28 @@ public class Quest extends PlayField {
                                             default:
                                                 break;
                                         }
-                                        break;
                                     case "donjon":
                                         switch (word) {
-                                            case "b1":
+                                            case "b1": ////// LAAAAAAAAAAA
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_BLOCK1));
                                                 break;
                                             case "b2":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_BLOCK2));
                                                 break;
                                             case "w":
-                                                tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_WATER));
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.DONJONWATER));
                                                 break;
                                             case "oe":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_DOOR_EAST));
                                                 break;
                                             case "ow":
-                                                tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_DOOR_WEST));
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.WEST));
                                                 break;
                                             case "on":
-                                                tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_DOOR_NORTH));
+                                                tempBoard.add(new Rock(this.game, Rock.Kind.NORTH));
                                                 break;
                                             case "os":
-                                                tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_DOOR_SOUTH));
+                                                tempBoard.add(new Rock(this.game, Rock.SOUTH));
                                                 break;
                                             case "pcn":
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_CLOSED_DOOR_NORTH));
@@ -176,22 +177,14 @@ public class Quest extends PlayField {
                                                 tempBoard.add(new Rock(this.game, Rock.Kind.DONJON_CLOSED_DOOR_SOUTH));
                                                 break;
                                             case ".":
-                                                tempBoard.add(new Floor(this.game, Floor.Color.DONJONSOL1));
+                                                tempBoard.add(new Floor(this.game, Floor.DONJONSOL1));
                                                 break;
                                             case "n":
-                                                tempBoard.add(new Floor(this.game, Floor.Color.DONJONVIDE));
+                                                tempBoard.add(new Floor(this.game, Floor.DONJONVIDE));
                                                 break;
                                             default:
                                                 break;
                                         }
-                                        break;
-                                    case "go":
-                                        switch (word) {
-                                            case ".":
-                                                tempBoard.add(new Floor(this.game, Floor.Color.GAMEOVER));
-                                                break;
-                                        }
-                                        break;
                                     default:
                                         break;
                                 }
@@ -205,11 +198,9 @@ public class Quest extends PlayField {
             e.printStackTrace();
         }
     }
-
     public Board getCurrentBoard() {
         return this.boards[this.x][this.y];
     }
-
     public void add(Board board) {
         //this.addGroup(board.getBackground());
         //this.addGroup(board.getForground());

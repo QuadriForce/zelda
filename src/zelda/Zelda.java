@@ -3,9 +3,9 @@ package zelda;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Random;
 
-import zelda.enemies.Enemies;
+import zelda.enemies.Enemy;
 import zelda.objects.worldObject;
 import zelda.scenary.Quest;
 import zelda.scenary.Rock;
@@ -17,8 +17,7 @@ import com.golden.gamedev.GameLoader;
 public class Zelda extends Game {
 
     private Link link;
-    private Link link1;
-    private Enemies enemy1;
+    private ArrayList<Enemy> enemies = new ArrayList<>();
     private Quest quest;
     private ArrayList<worldObject> worldObjects;
     private boolean menu;
@@ -36,27 +35,28 @@ public class Zelda extends Game {
         this.link = new Link(this);
         this.link.setBoard(this.quest.getCurrentBoard());
         this.menu = false;
-        this.link1 = new Link(this);
-        this.link1.setBoard(this.quest.getCurrentBoard());
-        this.link1.setLocation(250, 250); //544
-        this.enemy1 = new Enemies(this);
-        this.enemy1.setBoard(this.quest.getCurrentBoard());
-        this.enemy1.setLocation(200, 250); //544
+        int randomNumber = (int) (Math.random() * 6) + 1;
+        for (int i = 0; i < randomNumber; i++) {
+            Enemy enemy = new Enemy(this);
+            enemy.setBoard(this.quest.getCurrentBoard());
+            enemies.add(enemy);
+        }
+        //this.enemy1.setLocation(200, 250); //544
         //this.link1.setSpeed(0, 0);
         System.out.println("width: " + this.getWidth() + " height: " + this.getHeight());
     }
 
     public void initObjectsResources() {
         //System.out.println(this.link.getWorldObjects());
-        for (int i = 0; i < this.worldObjects.size(); i++) {
-            if (!this.link.getWorldObjects().contains(this.worldObjects.get(i))) {
-                String objectName = this.worldObjects.get(i).getName();
+        for (worldObject obj : this.worldObjects) {
+            if (!this.link.getWorldObjects().contains(obj)) {
+                String objectName = obj.getName();
                 //this.worldObjects.get(i) = new worldObject(this, objectName);
-                this.worldObjects.get(i).setBoard(this.quest.getCurrentBoard());
-                if (objectName.equals("keyDungeon"))
-                    this.worldObjects.get(i).setLocation(200, 400);
+                //obj.setBoard(this.quest.getCurrentBoard());
+                if (objectName.equals("crystal"))
+                    obj.setLocation(200, 400);
                 else if (objectName.equals("dungeonEntry")) {
-                    this.worldObjects.get(i).setLocation(300, 300);
+                    obj.setLocation(300, 300);
                 }
             }
         }
@@ -110,53 +110,71 @@ public class Zelda extends Game {
     }
 
     public void update(long elapsedTime) {
-        boolean left = false;
-        boolean right = false;
-        boolean up = false;
-        boolean down = false;
-
-
         if (this.quest.getCurrentBoard().getObjects() != null) {
             this.worldObjects = this.quest.getCurrentBoard().getObjects();
             initObjectsResources();
-            Rectangle[] objectRect = new Rectangle[this.worldObjects.size()];
 
             for (int i = 0; i < this.worldObjects.size(); i++) {
-                objectRect[i] = new Rectangle(
-                        (int) this.worldObjects.get(i).getX() + this.hitboxInset,
-                        (int) this.worldObjects.get(i).getY() + this.hitboxInset,
-                        this.worldObjects.get(i).getWidth() - 2 * this.hitboxInset,
-                        this.worldObjects.get(i).getHeight() - 2 * this.hitboxInset
-                );
-                if (this.link.getRectPos().intersects(objectRect[i])) {
-
-                    if (this.worldObjects.get(i).getName() == "keyDungeon") {
-                        this.link.addObject(this.worldObjects.get(i));
-                        System.out.println(this.quest.getGroups());
-                    } else if (this.worldObjects.get(i).getName() == "door") {
-                        //this.link.setLocation(this.worldObjects.get(i).getX(), this.worldObjects.get(i).getY() + this.worldObjects.get(i).getHeight());
-                        this.link.addObject(this.worldObjects.get(i));
+                if (this.link.getRectPos().intersects(this.worldObjects.get(i).getRectPos())) {
+                    SoundPlayer soundPlayer;
+                    switch (this.worldObjects.get(i).getName()){
+                        case "heart1":
+                            this.link.setLife(this.link.getLife()+1);
+                            soundPlayer = new SoundPlayer("res/sounds/LOZ_Get_Heart.wav");
+                            soundPlayer.play();
+                            this.quest.getCurrentBoard().getObjects().remove(i);
+                            break;
+                        case "heart2":
+                            this.link.setLife(this.link.getLife()+2);
+                            soundPlayer = new SoundPlayer("res/sounds/LOZ_Get_Heart.wav");
+                            soundPlayer.play();
+                            this.quest.getCurrentBoard().getObjects().remove(i);
+                            break;
+                        case "crystal":
+                            this.link.addObject(this.worldObjects.get(i));
+                            soundPlayer = new SoundPlayer("res/sounds/LOZ_Get_Rupee.wav");
+                            soundPlayer.play();
+                            this.quest.getCurrentBoard().getObjects().remove(i);
+                            break;
+                        case "keyDungeon":
+                            this.link.addObject(this.worldObjects.get(i));
+                            soundPlayer = new SoundPlayer("res/sounds/LOZ_Get_Item.wav");
+                            soundPlayer.play();
+                            this.quest.getCurrentBoard().getObjects().remove(i);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
         } else
             worldObjects = null;
 
-
-        if (this.link.getRectPos().intersects(this.link1.getRectPos())) {
-            if (link.getOrientation() == Orientation.WEST) {
-                this.link.setLocation(this.link1.getX() + this.link1.getWidth(), this.link.getY());
-            } else if (link.getOrientation() == Orientation.EAST) {
-                this.link.setLocation(this.link1.getX() - this.link.getWidth(), this.link.getY());
-            } else if (link.getOrientation() == Orientation.NORTH) {
-                this.link.setLocation(this.link.getX(), this.link1.getY() + this.link1.getHeight());
-            } else if (link.getOrientation() == Orientation.SOUTH) {
-                this.link.setLocation(this.link.getX(), this.link1.getY() - this.link.getHeight());
+        for (Enemy enemy : this.enemies) {
+            if (this.link.getRectPos().intersects(enemy.getRectPos())) {
+                if (link.getOrientation() == Orientation.WEST) {
+                    this.link.setLocation(enemy.getX() + enemy.getWidth(), this.link.getY());
+                    if(enemy.getOrientation() == Orientation.WEST)
+                        this.link.takeDamage();
+                } else if (link.getOrientation() == Orientation.EAST) {
+                    this.link.setLocation(enemy.getX() - this.link.getWidth(), this.link.getY());
+                    if(enemy.getOrientation() == Orientation.EAST)
+                        this.link.takeDamage();
+                } else if (link.getOrientation() == Orientation.NORTH) {
+                    this.link.setLocation(this.link.getX(), enemy.getY() + enemy.getHeight());
+                    if(enemy.getOrientation() == Orientation.NORTH)
+                        this.link.takeDamage();
+                } else if (link.getOrientation() == Orientation.SOUTH) {
+                    this.link.setLocation(this.link.getX(), enemy.getY() - this.link.getHeight());
+                    if(enemy.getOrientation() == Orientation.SOUTH)
+                        this.link.takeDamage();
+                }
             }
         }
 
+
         if (this.keyPressed(KeyEvent.VK_ALT)) {
-            this.link.fight(this.enemy1);
+            this.link.fight(this.enemies);
         } else if (this.keyDown(KeyEvent.VK_LEFT)) {
             this.link.walk(Orientation.WEST);
         } else if (this.keyDown(KeyEvent.VK_RIGHT)) {
@@ -171,72 +189,43 @@ public class Zelda extends Game {
             this.link.setSpeed(0, 0);
         }
 
-        this.enemy1.autoWalk(this.link);
+        for (Enemy enemy : this.enemies) {
+            enemy.autoWalk();
+        }
         checkMapTransition();
 
         //System.out.println(this.link.getX() + " " + this.link.getY());
         //System.out.println("width: " + this.getWidth() + " height: " + this.getHeight());
-        /*if (link.getOrientation() == Orientation.WEST) {
-            if (link.getX() < -10) {
-                left = true;
-            }
-        }
-        if (link.getOrientation() == Orientation.EAST) {
 
-            if (this.link.getX() > this.getHeight() + 50) {
-                right = true;
-            }
-        }
-        if (link.getOrientation() == Orientation.SOUTH) {
-
-            if (this.link.getY() > 543) {
-                down = true;
-            }
-        }
-        if (link.getOrientation() == Orientation.NORTH) {
-
-            if (this.link.getY() < 115) {
-                up = true;
-            }
-        }
-        if (left) {
-            this.quest.y -= 1;
-            this.link.setLocation(this.getWidth() - 30, this.link.getY());
-        }
-        if (right) {
-            this.quest.y += 1;
-            this.link.setLocation(0, this.link.getY());
-        }
-        if (up) {
-            this.quest.x -= 1;
-            this.link.setLocation(this.link.getX(), this.getHeight() - 30); //544
-        }
-        if (down) {
-            this.quest.x += 1;
-            this.link.setLocation(this.link.getX(), 115); //115 ==> hauteur du fond noir
-        }*/
 
         this.quest.update(elapsedTime);
         this.link.update(elapsedTime);
-        this.link1.update2(5);
-        this.enemy1.update(elapsedTime);
+        //this.link1.update(5);
+        for (Enemy enemy : this.enemies) {
+            enemy.update(5);
+        }
     }
 
     public void render(Graphics2D g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
         this.quest.render(g);
-        this.link.render(g);
-        if (this.link1.life > 0)
-            this.link1.render(g);
-        /*if (this.enemy1.getLife() > 0)
-            this.enemy1.render(g);*/
-        if (this.worldObjects != null && !this.worldObjects.isEmpty()) {
-            for (int i = 0; i < this.worldObjects.size(); i++) {
-                if (!this.link.getWorldObjects().contains(this.worldObjects.get(i))) {
-                    this.worldObjects.get(i).render(g);
+        if (this.link.getLife() > 0) {
+            this.link.render(g);
+            for (Enemy enemy : this.enemies) {
+                if (enemy.life > 0)
+                    enemy.render(g);
+            }
+            if (this.worldObjects != null && !this.worldObjects.isEmpty()) {
+                for (int i = 0; i < this.worldObjects.size(); i++) {
+                    if (!this.link.getWorldObjects().contains(this.worldObjects.get(i))) {
+                        this.worldObjects.get(i).render(g);
+                    }
                 }
             }
+        } else {
+            this.quest.x = 4;
+            this.quest.y = 2;
         }
     }
 

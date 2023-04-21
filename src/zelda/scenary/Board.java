@@ -25,7 +25,7 @@ public class Board {
     private Zelda game;
 
 
-    private ArrayList<worldObject> objects;
+    public ArrayList<worldObject> objects;
     private int size;
     
     private boolean display;
@@ -52,7 +52,7 @@ public class Board {
         return objects;
     }
 
-    public void setObjects(ArrayList<worldObject > objects) {
+    public void setObjects(ArrayList<worldObject> objects) {
         this.objects = objects;
     }
     

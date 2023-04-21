@@ -5,10 +5,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 
-import zelda.enemies.Enemies;
+import zelda.enemies.Enemy;
 import zelda.objects.Blade;
 import zelda.objects.Shield;
 import zelda.objects.worldObject;
@@ -44,7 +43,9 @@ public class Link extends AnimatedSprite {
 
     private Shield.Kind shield;
     private Orientation orientation;
-    public int life;
+
+
+    private int life;
 
     private Timer figth;
     private int hitboxInset = 5;
@@ -52,7 +53,7 @@ public class Link extends AnimatedSprite {
 
     public Link(Game game) {
         this.game = game;
-        this.enemyKilled =0;
+        this.enemyKilled = 0;
         this.worldObjects = new HashSet<>();
         this.linkGroup = new SpriteGroup("LINK SPRITE GROUP");
         this.life = 5;
@@ -122,8 +123,17 @@ public class Link extends AnimatedSprite {
         sprites[34] = game.getImage("res/sprites/Link/GLFWBW.gif");
 
         this.setImages(sprites);
-        this.setLocation(256, 380);
+        this.setLocation(100, 380);
         this.setAnimationFrame(0, 0);
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
+        System.out.println("Les PV de Link passe à : " + this.life);
     }
 
     public HashSet<worldObject> getWorldObjects() {
@@ -145,13 +155,16 @@ public class Link extends AnimatedSprite {
 
     public void takeDamage() {
         this.life -= 1;
+        SoundPlayer soundPlayer;
         if (this.life <= 0) {
-            SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Die.wav");
-            soundPlayer.play();
+            soundPlayer = new SoundPlayer("res/sounds/LOZ_Die.wav");
             this.setLocation(0, 0); //544
-            this.linkGroup.remove(this);
+            //this.linkGroup.remove(this);
 
+        } else {
+            soundPlayer = new SoundPlayer("res/sounds/LOZ_Hurt.wav");
         }
+        soundPlayer.play();
     }
 
     public SpriteGroup getLinkGroup() {
@@ -245,19 +258,152 @@ public class Link extends AnimatedSprite {
             }
         }
     }
-    public void update2(long elapsedTime) {
-        super.update(elapsedTime);
-        if (this.figth.action(elapsedTime)) {
-            this.figth.setActive(false);
-            if (this.orientation.equals(Orientation.WEST)) {
-                this.setX(this.getX() + 50);
-            } else if (this.orientation.equals(Orientation.NORTH)) {
-                this.setY(this.getY() + 50);
-                this.setAnimationFrame(0, 0);
+
+    private boolean checkHit(Enemy adv) {
+        if (this.getRectPos().intersects(adv.getRectPos())) {
+            SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Hit.wav");
+            soundPlayer.play();
+            adv.takeDamage();
+            System.out.println("adverse took damage! -50 hp to :" + adv.getLife());
+            return true;
+        }
+        return false;
+    }
+
+    public void fight(ArrayList<Enemy> adv) {
+        if (!this.figth.isActive()) {
+            this.setSpeed(0, 0);
+            this.figth.setActive(true);
+            switch (this.orientation) {
+                case NORTH:
+                    //System.out.println("avant: "+ this.getY());
+                    this.setY(this.getY() - 20);
+                    //System.out.println("après: "+this.getY());
+                    for (Enemy enemy : adv) {
+                        checkHit(enemy);
+                    }
+                    this.setAnimationFrame(14, 16);
+                    this.setAnimate(true);
+                    break;
+                case SOUTH:
+                    this.setY(this.getY() + 20);
+                    for (Enemy enemy : adv) {
+                        checkHit(enemy);
+                    }
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(17, 19);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(20, 22);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    break;
+                case EAST:
+                    this.setX(this.getX() + 10);
+                    for (Enemy enemy : adv) {
+                        checkHit(enemy);
+                    }
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(23, 25);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(26, 28);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    break;
+                case WEST:
+                    this.setX(this.getX() - 10);
+                    /*if(checkHit(adv)){
+                        this.setX(this.getX() + 15);
+                    }*/
+                    for (Enemy enemy : adv) {
+                        checkHit(enemy);
+                    }
+                    switch (this.shield) {
+                        case SMALL:
+                            this.setAnimationFrame(29, 31);
+                            break;
+                        case MAGICAL:
+                            this.setAnimationFrame(32, 34);
+                            break;
+                        default:
+                            // do nothing
+                    }
+                    this.setAnimate(true);
+                    this.orientation = Orientation.WEST;
+                    break;
+                default:
+                    // do nothing
             }
         }
     }
-    /*public void autoWalk() {
+
+
+    private class LinkCollisionManager extends AdvanceCollisionGroup {
+
+        public LinkCollisionManager() {
+            this.pixelPerfectCollision = false;
+
+        }
+
+        public void collided(Sprite s1, Sprite s2) {
+            this.revertPosition1();
+        }
+
+    }
+
+    public Rectangle getRectPos() {
+        Rectangle RectPos = new Rectangle(
+                (int) this.getX() + this.hitboxInset,
+                (int) this.getY() + this.hitboxInset,
+                this.getWidth() - 2 * this.hitboxInset,
+                this.getHeight() - 2 * this.hitboxInset
+        );
+        return RectPos;
+    }
+
+}
+    
+/*
+* public void getAttacked(fs enemie) {
+        int damage = enemie.getPuissance(); // REVOIR
+        this.takeDamage(damage);
+    }
+
+    public void takeDamage(int damage) {
+        this.life -= damage;
+        if (this.life <= 0) {
+            // mort, GAME OVER
+            this.linkGroup.remove(this);
+        }
+    }
+
+    public void attack(Enemies enemie) {
+        int damage = (int) (Math.random()*10);
+        enemie.takeDamage(damage);
+        int eLife = enemie.getLife();
+        if (eLife>=0) { // il reste de la vie a mon enemie
+            this.increaseScore(damage); // Mon score c'est la puissance de mon coup
+        }else { // La vie de mon enemie est négative
+            this.increaseScore(damage + eLife); // Mon score c'est le peu de points de vie qui lui restaient
+        }
+    }
+
+    public void increaseScore(int score) {
+        this.score += score;
+    }
+    *
+* */
+
+/*public void autoWalk() {
         if (!this.figth.isActive()) {
             int index = (int) (Math.random() * 5);
             Orientation direction = Orientation.WEST;
@@ -355,136 +501,3 @@ public class Link extends AnimatedSprite {
         }
     }
     }*/
-
-    private boolean checkHit(Enemies adv) {
-        if (this.getRectPos().intersects(adv.getRectPos())) {
-            SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Hit.wav");
-            soundPlayer.play();
-            adv.takeDamage();
-            System.out.println("adverse took damage! -1 hp to :" + adv.getLife());
-            return true;
-        }
-        return false;
-    }
-
-    public void fight(Enemies adv) {
-        if (!this.figth.isActive()) {
-            this.setSpeed(0, 0);
-            this.figth.setActive(true);
-            switch (this.orientation) {
-                case NORTH:
-                    //System.out.println("avant: "+ this.getY());
-                    this.setY(this.getY() - 20);
-                    //System.out.println("après: "+this.getY());
-                    checkHit(adv);
-                    this.setAnimationFrame(14, 16);
-                    this.setAnimate(true);
-                    break;
-                case SOUTH:
-                    this.setY(this.getY() + 20);
-                    checkHit(adv);
-                    switch (this.shield) {
-                        case SMALL:
-                            this.setAnimationFrame(17, 19);
-                            break;
-                        case MAGICAL:
-                            this.setAnimationFrame(20, 22);
-                            break;
-                        default:
-                            // do nothing
-                    }
-                    this.setAnimate(true);
-                    break;
-                case EAST:
-                    this.setX(this.getX() + 10);
-                    checkHit(adv);
-                    switch (this.shield) {
-                        case SMALL:
-                            this.setAnimationFrame(23, 25);
-                            break;
-                        case MAGICAL:
-                            this.setAnimationFrame(26, 28);
-                            break;
-                        default:
-                            // do nothing
-                    }
-                    this.setAnimate(true);
-                    break;
-                case WEST:
-                    this.setX(this.getX() - 10);
-                    checkHit(adv);
-                    switch (this.shield) {
-                        case SMALL:
-                            this.setAnimationFrame(29, 31);
-                            break;
-                        case MAGICAL:
-                            this.setAnimationFrame(32, 34);
-                            break;
-                        default:
-                            // do nothing
-                    }
-                    this.setAnimate(true);
-                    this.orientation = Orientation.WEST;
-                    break;
-                default:
-                    // do nothing
-            }
-        }
-    }
-
-
-    private class LinkCollisionManager extends AdvanceCollisionGroup {
-
-        public LinkCollisionManager() {
-            this.pixelPerfectCollision = false;
-
-        }
-
-        public void collided(Sprite s1, Sprite s2) {
-            this.revertPosition1();
-        }
-
-    }
-
-    public Rectangle getRectPos() {
-        Rectangle RectPos = new Rectangle(
-                (int) this.getX() + this.hitboxInset,
-                (int) this.getY() + this.hitboxInset,
-                this.getWidth() - 2 * this.hitboxInset,
-                this.getHeight() - 2 * this.hitboxInset
-        );
-        return RectPos;
-    }
-
-}
-    
-/*
-* public void getAttacked(fs enemie) {
-        int damage = enemie.getPuissance(); // REVOIR
-        this.takeDamage(damage);
-    }
-
-    public void takeDamage(int damage) {
-        this.life -= damage;
-        if (this.life <= 0) {
-            // mort, GAME OVER
-            this.linkGroup.remove(this);
-        }
-    }
-
-    public void attack(Enemies enemie) {
-        int damage = (int) (Math.random()*10);
-        enemie.takeDamage(damage);
-        int eLife = enemie.getLife();
-        if (eLife>=0) { // il reste de la vie a mon enemie
-            this.increaseScore(damage); // Mon score c'est la puissance de mon coup
-        }else { // La vie de mon enemie est négative
-            this.increaseScore(damage + eLife); // Mon score c'est le peu de points de vie qui lui restaient
-        }
-    }
-
-    public void increaseScore(int score) {
-        this.score += score;
-    }
-    *
-* */

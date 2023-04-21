@@ -1,6 +1,6 @@
 package zelda.objects;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +17,7 @@ public class worldObject extends AnimatedSprite{
     private static final int ANIMATION_DELAY = 100;
     private Game game;
     private Timer fight;
+    private int hitboxInset = 0;
     private CollisionManager manager;
     public worldObject(Game game, String name) {
         this.name = name;
@@ -29,25 +30,23 @@ public class worldObject extends AnimatedSprite{
         return name;
     }
     private void initResources() {
-        Set<String> dungeonKeys = new HashSet<>();
-        dungeonKeys.add("keyDungeon");
-        dungeonKeys.add("keyDungeon-1");
-        dungeonKeys.add("keyDungeon-2");
-        dungeonKeys.add("keyDungeon-3");
-
-        Set<String> DoorsStair = new HashSet<>();
-        DoorsStair.add("dungeonEntry");
-        DoorsStair.add("upStair");
-        DoorsStair.add("downStair");
 
 
         BufferedImage[] sprites = new BufferedImage[1];
-        if (dungeonKeys.contains(name)) {
-            //sprites[0] = game.getImage("res/sprites/Objects/key.gif");
-            sprites[0] = game.getImage("res/sprites/Objects/OK.gif");
+        switch (this.name){
+            case "heart1":
+                sprites[0] = game.getImage("res/sprites/Objects/OHC.gif");
+                break;
+            case "heart2":
+                sprites[0] = game.getImage("res/sprites/Objects/OBH.gif");
+                break;
+            case "crystal":
+                sprites[0] = game.getImage("res/sprites/Objects/OBP.gif");
+                break;
+            case "dungeonEntry":
+                sprites[0] = game.getImage("res/sprites/Objects/OK.gif");
+                break;
         }
-        else if (DoorsStair.contains(name))
-            sprites[0] = game.getImage("res/sprites/Dongeon/1/stair.gif");
         this.setImages(sprites);
         //this.setLocation(256, 300);
         this.setAnimationFrame(0, 0);
@@ -69,5 +68,15 @@ public class worldObject extends AnimatedSprite{
 
             this.revertPosition1();
         }
+    }
+
+    public Rectangle getRectPos() {
+        Rectangle RectPos = new Rectangle(
+                (int) this.getX() + this.hitboxInset,
+                (int) this.getY() + this.hitboxInset,
+                this.getWidth() - 2 * this.hitboxInset,
+                this.getHeight() - 2 * this.hitboxInset
+        );
+        return RectPos;
     }
 }

@@ -22,7 +22,6 @@ public class Floor extends AbstractTile {
         WATER_NORTH_EAST_CORNER,
         WATER_NORTH_CENTER_CORNER,
         WATER_NORTH_WEST_CORNER,
-        GAMEOVER,
     }
 
     private Color color;
@@ -74,10 +73,6 @@ public class Floor extends AbstractTile {
             case WATER_NORTH_WEST_CORNER:
                 this.add(new Sprite(this.game.getImage("res/sprites/scenary/Water/w1.gif")), 1);
                 break;
-            case GAMEOVER:
-                this.add(new Sprite(this.game.getImage("res/sprites/scenary/go.gif")), 1);
-                break;
-
 
         }
     }

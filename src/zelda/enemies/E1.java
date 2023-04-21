@@ -18,7 +18,7 @@ import zelda.objects.Blade;
 import zelda.objects.Shield;
 import zelda.scenary.Board;
 
-public class Enemies extends AnimatedSprite{
+public class E1 extends AnimatedSprite{
 	private static final double SPEED = 0.2;
     private static final int ANIMATION_DELAY = 100;
     private static final int FIGHT_TIMER = 300;
@@ -36,14 +36,14 @@ public class Enemies extends AnimatedSprite{
     private String name;
     private long lastMoveTime; // Temps en millisecondes du dernier déplacement
     private long moveInterval; // Temps entre chaque déplacement automatique
-    
 
-    public Enemies(Game game) {
+
+    public E1(Game game) {
         this.game = game;
         this.shield = Link.DEFAULT_SHIELD;
-        this.orientation = Enemies.DEFAULT_ORIENTATION;
-        this.getAnimationTimer().setDelay(Enemies.getAnimationDelay());
-        this.figth = new Timer(Enemies.getFightTimer());
+        this.orientation = E1.DEFAULT_ORIENTATION;
+        this.getAnimationTimer().setDelay(E1.getAnimationDelay());
+        this.figth = new Timer(E1.getFightTimer());
         this.figth.setActive(false);
         this.manager = new EnemiesCollisionManager();
         this.initResources();
@@ -62,7 +62,7 @@ public class Enemies extends AnimatedSprite{
 	public void setLife(int life) {
 		this.life = life;
 	}
-	
+
 	public void getName (String name) {
 		this.name = name;
 	}
@@ -85,9 +85,9 @@ public class Enemies extends AnimatedSprite{
         this.setLocation(200, 300);
         this.setAnimationFrame(0, 4);
     }
-	
+
 	// Ajouter l'objet AnimatedSprite (ennemies) au groupe de sprites du plateau de jeu
-    public void setBoard(Board board) {       
+    public void setBoard(Board board) {
         SpriteGroup Enemies = new SpriteGroup("Enemies SPRITE GROUP");
         Enemies.add(this);
         this.manager.setCollisionGroup(Enemies, board.getForeground());
@@ -109,15 +109,15 @@ public class Enemies extends AnimatedSprite{
                 this.setAnimationFrame(0, 0);
             }
         }
-        if (this.manager != null) 
+        if (this.manager != null)
             this.manager.checkCollision();
     }
-   
-    
+
+
     /*public void walk(Orientation direction) {
-    	
+
     direction = getRandomDirection();
-    
+
 
     	switch (direction) {
         case NORTH:
@@ -180,21 +180,8 @@ public class Enemies extends AnimatedSprite{
         }
     }*/
 
-    // Méthode pour choisir une direction aléatoire
-    private Orientation getRandomDirection() {
-        int rand = (int) (Math.random() * 4);
-        switch (rand) {
-            case 0:
-                return Orientation.EAST;
-            case 1:
-                return Orientation.WEST;
-            case 2:
-                return Orientation.SOUTH;
-            default:
-                return Orientation.NORTH;
-        }
-    }
-    
+
+
     // Méthode pour vérifier si une direction est valide
     private boolean isDirectionValid(Orientation direction) {
         if (direction.equals(Orientation.EAST) && this.getX() + 22 >= 16) {
@@ -209,19 +196,19 @@ public class Enemies extends AnimatedSprite{
         return true;
     }
 
-    
+
 	// Dessiner à l'écran le sprite de l'ennemi et les objets associés
     public void render(Graphics2D g) {
         super.render(g);
     }
-     	
+
 	// Empêcher les sprites de se chevaucher ou de traverser les uns les autres lorsqu'une collision est détectée.
-	private class EnemiesCollisionManager extends AdvanceCollisionGroup {	
+	private class EnemiesCollisionManager extends AdvanceCollisionGroup {
 	    public EnemiesCollisionManager() {
 	        this.pixelPerfectCollision = false;
 	    }
-	    
-	    public void collided(Sprite s1, Sprite s2) {        
+
+	    public void collided(Sprite s1, Sprite s2) {
 	        this.revertPosition1();
 	    }
 	}
@@ -253,26 +240,26 @@ public class Enemies extends AnimatedSprite{
                 case 0: // left
                     direction = Orientation.WEST;
                     this.setAnimate(true);
-                    this.setHorizontalSpeed(-Enemies.SPEED);
+                    this.setHorizontalSpeed(-E1.SPEED);
                     this.setVerticalSpeed(0);
                     this.orientation = Orientation.WEST;
                     break;
                 case 1: // right
                     this.setAnimate(true);
-                    this.setHorizontalSpeed(Enemies.SPEED);
+                    this.setHorizontalSpeed(E1.SPEED);
                     this.setVerticalSpeed(0);
                     this.orientation = Orientation.EAST;
                     break;
                 case 2: // up
                     this.setAnimationFrame(0, 1);
                     this.setAnimate(true);
-                    this.setVerticalSpeed(-Enemies.SPEED);
+                    this.setVerticalSpeed(-E1.SPEED);
                     this.setHorizontalSpeed(0);
                     this.orientation = Orientation.NORTH;
                     break;
                 case 3: // down
                     this.setAnimate(true);
-                    this.setVerticalSpeed(Enemies.SPEED);
+                    this.setVerticalSpeed(E1.SPEED);
                     this.setHorizontalSpeed(0);
                     this.orientation = Orientation.SOUTH;
                     break;
@@ -286,7 +273,7 @@ public class Enemies extends AnimatedSprite{
             SoundPlayer soundPlayer = new SoundPlayer("res/sounds/LOZ_Hit.wav");
             soundPlayer.play();
             adv.takeDamage();
-            System.out.println("adverse took damage! -30 hp to :" + adv.life);
+            System.out.println("Les PV de Link passe à :" + adv.getLife());
             return true;
         }
         return false;
